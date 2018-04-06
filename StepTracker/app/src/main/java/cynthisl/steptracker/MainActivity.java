@@ -9,15 +9,28 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.PointsGraphSeries;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
+
+    int MAX_GRAPH_POINTS = 500;
+
+    float PEAK_RATIO_THRESHOLD = 0.7f;
+    float SAFETY = 1.0f;
+    int PEAK_WINDOW = 50;
+    int MOVING_AVG_SIZE = 10;
 
     private SensorManager _sm;
     private Sensor _accel;
@@ -28,22 +41,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] gravity = new float[3];
     private float _acceleration = 0;
 
-    TextView _tv_x, _tv_y, _tv_z, _tv_stepCount;
-
-    int MAX_GRAPH_POINTS = 500;
-
+    TextView _tv_x, _tv_y, _tv_z, _tv_androidCount, _tv_stepCount;
+    Button _bReset;
 
 
     private LineGraphSeries<DataPoint> _graph_x;
     private LineGraphSeries<DataPoint> _graph_y;
     private LineGraphSeries<DataPoint> _graph_z;
     private LineGraphSeries<DataPoint> _graph_mag;
+    private PointsGraphSeries<DataPoint> _graph_peaks;
 
-    int avgSize = 10;
-    float movingAvgVals[] = new float[avgSize];
+    float movingAvgVals[] = new float[MOVING_AVG_SIZE];
     int movingAvgIndex = 0;
     float movingAvgSum = 0;
 
+
+    float peakVals[] = new float[PEAK_WINDOW];
+    int peakValIdx = 0;
+    long lastTimePeaked = 0;
+
+    int stepsCounted = 0;
     double androidCounterBase = 0;
     double lastAndroidStepCount;
 
@@ -56,6 +73,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         _tv_y = findViewById(R.id.tv_y);
         _tv_z = findViewById(R.id.tv_z);
         _tv_stepCount = findViewById(R.id.tv_stepCount);
+        _tv_androidCount = findViewById(R.id.tv_stepCountAndroid);
+
+        _bReset = findViewById(R.id.button_reset);
+        _bReset.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                reset();
+            }
+        });
 
         GraphView raw_graph = this.findViewById(R.id.raw_graph);
         _graph_x = new LineGraphSeries<>();
@@ -73,17 +100,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         raw_graph.getViewport().setYAxisBoundsManual(true);
         raw_graph.getViewport().setMinY(-10);
         raw_graph.getViewport().setMaxY(10);
-        raw_graph.getLegendRenderer().setVisible(true);
-        
+
         GraphView mag_graph = this.findViewById(R.id.mag_graph);
         _graph_mag = new LineGraphSeries<>();
         mag_graph.addSeries(_graph_mag);
+        _graph_peaks = new PointsGraphSeries<>();
+        mag_graph.addSeries(_graph_peaks);
         mag_graph.getViewport().setXAxisBoundsManual(true);
         mag_graph.getViewport().setMinX(0);
         mag_graph.getViewport().setMaxX(MAX_GRAPH_POINTS);
-        raw_graph.getViewport().setYAxisBoundsManual(true);
-        raw_graph.getViewport().setMinY(-10);
-        raw_graph.getViewport().setMaxY(10);
+        mag_graph.getViewport().setYAxisBoundsManual(true);
+        mag_graph.getViewport().setMinY(0);
+        mag_graph.getViewport().setMaxY(7);
+
 
 
 
@@ -126,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 _tv_y.setText("y: " + _y);
                 _tv_z.setText("z: " + _z);
 
+                Log.d("accel", "x:" + _x + " y:" + _y + " z:" + _z);
+
                 _graph_x.appendData(new DataPoint(timestamp, _x), true, MAX_GRAPH_POINTS);
                 _graph_y.appendData(new DataPoint(timestamp, _y), true, MAX_GRAPH_POINTS);
                 _graph_z.appendData(new DataPoint(timestamp, _z), true, MAX_GRAPH_POINTS);
@@ -134,13 +165,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 _graph_mag.appendData(new DataPoint(timestamp, _acceleration), true, MAX_GRAPH_POINTS);
 
                 timestamp++;
+
+                peakVals[peakValIdx++] = _acceleration;
+                if(peakValIdx == PEAK_WINDOW) {
+                    Map<Long, Float> peaks = detectPeaks(peakVals, lastTimePeaked);
+                    stepsCounted += peaks.size();
+                    _tv_stepCount.setText("Steps: " + stepsCounted);
+                    for(Map.Entry<Long, Float> p : peaks.entrySet()) {
+                        _graph_peaks.appendData(new DataPoint(p.getKey(), p.getValue()), false, MAX_GRAPH_POINTS);
+                    }
+
+                    lastTimePeaked = timestamp;
+                    peakValIdx = 0;
+                }
+
                 break;
 
             case Sensor.TYPE_STEP_COUNTER:
 
                 lastAndroidStepCount = event.values[0];
 
-                _tv_stepCount.setText("Step counter: " + (lastAndroidStepCount-androidCounterBase));
+                _tv_androidCount.setText("Android counter: " + (lastAndroidStepCount-androidCounterBase));
 
                 break;
 
@@ -159,16 +204,54 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         movingAvgSum += val;
         movingAvgVals[movingAvgIndex] = val;
 
-        if(++movingAvgIndex == avgSize) {
+        if(++movingAvgIndex == MOVING_AVG_SIZE) {
             movingAvgIndex = 0;
         }
 
-        return movingAvgSum/avgSize;
+        return movingAvgSum/ MOVING_AVG_SIZE;
 
     }
 
+    public Map<Long, Float> detectPeaks(float[] values, long startTime) {
+
+        Map<Long, Float> peaks = new LinkedHashMap<>();
+
+        int peakCount = 0;
+        int peakAccumulate = 0;
+
+        for(int i=1; i<PEAK_WINDOW-1; i++){
+            float fwd = values[i+1] - values[i];
+            float back = values[i] - values[i-1];
+
+            if(fwd < 0 && back > 0) {
+                peakCount++;
+                peakAccumulate += values[i];
+            }
+        }
+
+        float peakMean = peakAccumulate/peakCount;
+
+        int stepCount = 0;
+
+        for(int i=1; i<PEAK_WINDOW-1; i++) {
+            float fwd = values[i+1] - values[i];
+            float back = values[i] - values[i-1];
+            if(fwd < 0 && back > 0 && (values[i] > PEAK_RATIO_THRESHOLD *peakMean) && values[i]> SAFETY) {
+                stepCount++;
+                peaks.put(startTime+i, values[i]);
+            }
+        }
+
+        return peaks;
+
+    }
+
+
+
     public void reset() {
-        timestamp = 0;
+        //timestamp = 0;
         androidCounterBase = lastAndroidStepCount;
+
+        _tv_androidCount.setText("Android counter: " + (lastAndroidStepCount-androidCounterBase));
     }
 }
