@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
@@ -48,8 +49,25 @@ public class AquariumView extends View {
 
     private void drawFish(Canvas canvas) {
 
-        paint.setColor(Color.YELLOW);
+        int left = 100;
+        int top = 100;
+        int len = 100;
+        int height = 75;
 
-        canvas.drawCircle(50, 50, 50, paint);
+        Path tail = new Path();
+        tail.setFillType(Path.FillType.EVEN_ODD);
+        tail.moveTo((int)(left + len*.75), (int)(top + height*.5));
+        tail.lineTo((int)(left + len), (int)(top));
+        tail.lineTo(left+len, top+height);
+        tail.lineTo((int)(left+len*.75), (int)(top+height*.5));
+        tail.close();
+
+
+        paint.setColor(Color.YELLOW);
+        paint.setStyle(Paint.Style.FILL);
+
+        canvas.drawOval(left, top, (int)(left+len*.8), top+height, paint);
+        canvas.drawPath(tail, paint);
+
     }
 }
