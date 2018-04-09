@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">StepTracker</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="debug_fragment">Debug</string>
+    <string name="viz_fragment">Visualization</string>
 </resources>

@@ -6,6 +6,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,12 +28,12 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
-    int MAX_GRAPH_POINTS = 500;
+    int MAX_GRAPH_POINTS = 250;
 
-    float PEAK_RATIO_THRESHOLD = 0.7f;
-    float SAFETY = 1.0f;
-    int PEAK_WINDOW = 50;
-    int MOVING_AVG_SIZE = 10;
+    float PEAK_RATIO_THRESHOLD = 0.8f;
+    float SAFETY = 0.5f;
+    int PEAK_WINDOW = 75;
+    int MOVING_AVG_SIZE = 15;
 
     private SensorManager _sm;
     private Sensor _accel;
@@ -51,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private LineGraphSeries<DataPoint> _graph_mag;
     private PointsGraphSeries<DataPoint> _graph_peaks;
 
-    float movingAvgVals[] = new float[MOVING_AVG_SIZE];
+    float movingAvgVals[][] = new float[3][MOVING_AVG_SIZE];
     int movingAvgIndex = 0;
-    float movingAvgSum = 0;
+    float movingAvgSum[] = new float[3];
+    boolean movingAvgInitialized = false;
 
 
     float peakVals[] = new float[PEAK_WINDOW];
@@ -68,6 +72,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*
+        ViewPager viewPager = findViewById(R.id.viewpager);
+        SimpleFragmentPagerAdapter adapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+        TabLayout tabLayout = findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        */
+
 
         _tv_x = findViewById(R.id.tv_x);
         _tv_y = findViewById(R.id.tv_y);
@@ -105,20 +118,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         _graph_mag = new LineGraphSeries<>();
         mag_graph.addSeries(_graph_mag);
         _graph_peaks = new PointsGraphSeries<>();
+        _graph_peaks.setSize(5);
+        _graph_peaks.setColor(Color.RED);
         mag_graph.addSeries(_graph_peaks);
         mag_graph.getViewport().setXAxisBoundsManual(true);
         mag_graph.getViewport().setMinX(0);
         mag_graph.getViewport().setMaxX(MAX_GRAPH_POINTS);
-        mag_graph.getViewport().setYAxisBoundsManual(true);
-        mag_graph.getViewport().setMinY(0);
-        mag_graph.getViewport().setMaxY(7);
+        //mag_graph.getViewport().setYAxisBoundsManual(true);
+        //mag_graph.getViewport().setMinY(0);
+       // mag_graph.getViewport().setMaxY(7);
 
 
 
 
         _sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         _accel = _sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        _sm.registerListener(this, _accel, SensorManager.SENSOR_DELAY_GAME);
+        _sm.registerListener(this, _accel, SensorManager.SENSOR_DELAY_NORMAL);
 
         _stepCounter = _sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         _sm.registerListener(this, _stepCounter, SensorManager.SENSOR_DELAY_NORMAL);
@@ -161,7 +176,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 _graph_y.appendData(new DataPoint(timestamp, _y), true, MAX_GRAPH_POINTS);
                 _graph_z.appendData(new DataPoint(timestamp, _z), true, MAX_GRAPH_POINTS);
 
-                _acceleration = calcMovingAverage((float) Math.sqrt(_x*_x + _y*_y + _z*_z));
+                float avgs[] = calcMovingAverage(new float[]{_x, _y, _z});
+                _acceleration = (float) Math.sqrt(avgs[0]*avgs[0] + avgs[1]*avgs[1] + avgs[2]*avgs[2]);
+                Log.d("smoothed:", "x:" + avgs[0] + " y:" + avgs[1] + " z:" + avgs[2] + " mag:" + _acceleration);
                 _graph_mag.appendData(new DataPoint(timestamp, _acceleration), true, MAX_GRAPH_POINTS);
 
                 timestamp++;
@@ -197,18 +214,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    public float calcMovingAverage(float val) {
+    public float[] calcMovingAverage(float[] val) {
 
-        // keep a running sum
-        movingAvgSum -= movingAvgVals[movingAvgIndex];
-        movingAvgSum += val;
-        movingAvgVals[movingAvgIndex] = val;
+        /*if(!movingAvgInitialized) {
+            for(int i=0; i<3; i++) {
+                Arrays.fill(movingAvgVals[i], val[i]);
+            }
+            movingAvgInitialized = true;
+        }*/
 
-        if(++movingAvgIndex == MOVING_AVG_SIZE) {
+        float avg[] = new float[3];
+
+        for(int i=0; i<3; i++) {
+
+            // keep a running sum
+            movingAvgSum[i] -= movingAvgVals[i][movingAvgIndex];
+            movingAvgSum[i] += val[i];
+            movingAvgVals[i][movingAvgIndex] = val[i];
+
+            avg[i] = movingAvgSum[i]/MOVING_AVG_SIZE;
+
+        }
+        if (++movingAvgIndex == MOVING_AVG_SIZE) {
             movingAvgIndex = 0;
         }
 
-        return movingAvgSum/ MOVING_AVG_SIZE;
+        return avg;
 
     }
 
@@ -217,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Map<Long, Float> peaks = new LinkedHashMap<>();
 
         int peakCount = 0;
-        int peakAccumulate = 0;
+        float peakAccumulate = 0;
 
         for(int i=1; i<PEAK_WINDOW-1; i++){
             float fwd = values[i+1] - values[i];
@@ -236,7 +267,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         for(int i=1; i<PEAK_WINDOW-1; i++) {
             float fwd = values[i+1] - values[i];
             float back = values[i] - values[i-1];
-            if(fwd < 0 && back > 0 && (values[i] > PEAK_RATIO_THRESHOLD *peakMean) && values[i]> SAFETY) {
+            if(fwd < 0
+                    && back > 0
+                    && (values[i] > PEAK_RATIO_THRESHOLD * peakMean)
+                    && values[i] > SAFETY) {
                 stepCount++;
                 peaks.put(startTime+i, values[i]);
             }
@@ -251,7 +285,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void reset() {
         //timestamp = 0;
         androidCounterBase = lastAndroidStepCount;
-
         _tv_androidCount.setText("Android counter: " + (lastAndroidStepCount-androidCounterBase));
+
+        stepsCounted = 0;
+        _tv_stepCount.setText("Steps: " + stepsCounted);
     }
 }
