@@ -11,12 +11,33 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.Vector;
+
 /**
  * TODO: document your custom view class.
  */
 public class AquariumView extends View {
 
     private Paint paint;
+    int canvasWidth;
+    int canvasHeight;
+    long stepCount;
+    long lastFishUpdate;
+
+    Vector<Fish> fishes;
+
+    class Fish {
+        int left, top, length, height, color;
+        boolean swimLeft;
+        public Fish(int l, int t, int len, int h, int c, boolean swimDir) {
+            left = l;
+            top = t;
+            length = len;
+            height = h;
+            color = c;
+            swimLeft = swimDir;
+        }
+    }
 
     public AquariumView(Context context) {
         super(context);
@@ -36,38 +57,99 @@ public class AquariumView extends View {
     private void init(AttributeSet attrs, int defStyle) {
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        stepCount = 0;
+        lastFishUpdate = 0;
+        fishes = new Vector<>();
 
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        canvasWidth = w;
+        canvasHeight = h;
+        super.onSizeChanged(w, h, oldw, oldh);
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        drawFish(canvas);
+        for(Fish f : fishes) {
+            drawFish(f, canvas);
+        }
+
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(20);
+        canvas.drawText("Steps: " + stepCount, 20, 30, paint);
     }
 
-    private void drawFish(Canvas canvas) {
+    public void addRandomFish() {
 
-        int left = 100;
-        int top = 100;
-        int len = 100;
-        int height = 75;
+        int left = (int)(Math.random() * canvasWidth);
+        int top = (int)(Math.random() * canvasHeight);
+        int len = (int)(Math.random() * 250 + 20);
+        int height = (int)(Math.random() * 100 + 10);
+        int col = Color.argb(255, (int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256));
+        boolean dir = (Math.random() < 0.5);
 
-        Path tail = new Path();
-        tail.setFillType(Path.FillType.EVEN_ODD);
-        tail.moveTo((int)(left + len*.75), (int)(top + height*.5));
-        tail.lineTo((int)(left + len), (int)(top));
-        tail.lineTo(left+len, top+height);
-        tail.lineTo((int)(left+len*.75), (int)(top+height*.5));
-        tail.close();
+        Fish f = new Fish(left, top, len, height, col, dir);
+        fishes.add(f);
+    }
+
+    public void drawFish(Fish f, Canvas canvas) {
+
+        int left = f.left;
+        int top = f.top;
+        int len = f.length;
+        int height = f.height;
+        int color = f.color;
 
 
-        paint.setColor(Color.YELLOW);
+        paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
 
-        canvas.drawOval(left, top, (int)(left+len*.8), top+height, paint);
-        canvas.drawPath(tail, paint);
+        if(f.swimLeft) {
+            Path tail = new Path();
+            tail.setFillType(Path.FillType.EVEN_ODD);
+            tail.moveTo((int) (left + len * .75), (int) (top + height * .5));
+            tail.lineTo((int) (left + len), (int) (top));
+            tail.lineTo(left + len, top + height);
+            tail.lineTo((int) (left + len * .75), (int) (top + height * .5));
+            tail.close();
 
+            canvas.drawOval(left, top, (int) (left + len * .8), top + height, paint);
+            canvas.drawPath(tail, paint);
+
+            paint.setColor(Color.BLACK);
+            canvas.drawCircle((int) (left + len * .1), (int) (top + height * .5), 5, paint);
+        } else {
+            Path tail = new Path();
+            tail.setFillType(Path.FillType.EVEN_ODD);
+            tail.moveTo((int) (left + len * .25), (int) (top + height * .5));
+            tail.lineTo(left, top);
+            tail.lineTo(left, top + height);
+            tail.lineTo((int) (left + len * .25), (int) (top + height * .5));
+            tail.close();
+
+            canvas.drawOval((int)(left +len*.2), top, (left + len), top + height, paint);
+            canvas.drawPath(tail, paint);
+
+            paint.setColor(Color.BLACK);
+            canvas.drawCircle((int) (left + len * .9), (int) (top + height * .5), 5, paint);
+
+        }
+
+    }
+
+    public void updateStepCount(long steps) {
+
+        stepCount = steps;
+
+        if(lastFishUpdate + 10 <= stepCount) {
+            addRandomFish();
+            lastFishUpdate = stepCount;
+        }
+
+        invalidate();
     }
 }

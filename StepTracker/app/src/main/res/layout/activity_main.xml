@@ -24,9 +24,12 @@
             android:layout_height="1000dp"
             android:orientation="vertical">
 
+
             <cynthisl.steptracker.AquariumView
+                android:id="@+id/aquarium"
                 android:layout_width="match_parent"
-                android:layout_height="250dp" />
+                android:layout_height="250dp"
+                android:background="#4e8ee2"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

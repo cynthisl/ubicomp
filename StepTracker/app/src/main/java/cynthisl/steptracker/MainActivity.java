@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView _tv_x, _tv_y, _tv_z, _tv_androidCount, _tv_stepCount;
     Button _bReset;
 
+    AquariumView aquariumView;
 
     private LineGraphSeries<DataPoint> _graph_x;
     private LineGraphSeries<DataPoint> _graph_y;
@@ -80,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         TabLayout tabLayout = findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
         */
+
+        aquariumView = findViewById(R.id.aquarium);
 
 
         _tv_x = findViewById(R.id.tv_x);
@@ -194,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     lastTimePeaked = timestamp;
                     peakValIdx = 0;
+
+                    aquariumView.updateStepCount(stepsCounted);
                 }
 
                 break;
