@@ -27,7 +27,7 @@ public class AquariumView extends View {
     Vector<Fish> fishes;
 
     class Fish {
-        int left, top, length, height, color;
+        int left, top, length, height, color, speed;
         boolean swimLeft;
         public Fish(int l, int t, int len, int h, int c, boolean swimDir) {
             left = l;
@@ -36,6 +36,21 @@ public class AquariumView extends View {
             height = h;
             color = c;
             swimLeft = swimDir;
+            speed = (int)(Math.random()*5);
+        }
+        public void swim(long px) {
+            long move = px*speed;
+            if(swimLeft) {
+                left -= move;
+                if(left+length <= 0 ) {
+                    left = canvasWidth;
+                }
+            } else {
+                left += move;
+                if(left >= canvasWidth) {
+                    left = 0-length;
+                }
+            }
         }
     }
 
@@ -143,6 +158,10 @@ public class AquariumView extends View {
 
     public void updateStepCount(long steps) {
 
+        for(Fish f : fishes) {
+            f.swim(steps-stepCount);
+        }
+
         stepCount = steps;
 
         if(lastFishUpdate + 10 <= stepCount) {
@@ -150,6 +169,13 @@ public class AquariumView extends View {
             lastFishUpdate = stepCount;
         }
 
+        invalidate();
+    }
+
+    public void reset() {
+        fishes.clear();
+        stepCount = 0;
+        lastFishUpdate = 0;
         invalidate();
     }
 }

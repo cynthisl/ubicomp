@@ -294,5 +294,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         stepsCounted = 0;
         _tv_stepCount.setText("Steps: " + stepsCounted);
+
+        aquariumView.reset();
     }
 }
