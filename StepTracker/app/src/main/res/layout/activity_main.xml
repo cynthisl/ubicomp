@@ -21,14 +21,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1000dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
             <cynthisl.steptracker.AquariumView
                 android:id="@+id/aquarium"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="750dp"
                 android:background="#4e8ee2"/>
 
             <LinearLayout
@@ -61,13 +61,13 @@
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/raw_graph"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="300dp"
                 android:layout_weight="2" />
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/mag_graph"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="300dp"
                 android:layout_weight="1" />
 
             <LinearLayout

@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     float PEAK_RATIO_THRESHOLD = 0.8f;
     float SAFETY = 0.5f;
-    int PEAK_WINDOW = 75;
-    int MOVING_AVG_SIZE = 15;
+    int PEAK_WINDOW = 100;
+    int MOVING_AVG_SIZE = 25;
 
     private SensorManager _sm;
     private Sensor _accel;
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private LineGraphSeries<DataPoint> _graph_z;
     private LineGraphSeries<DataPoint> _graph_mag;
     private PointsGraphSeries<DataPoint> _graph_peaks;
+    private LineGraphSeries<DataPoint> _graph_threshold;
 
     float movingAvgVals[][] = new float[3][MOVING_AVG_SIZE];
     int movingAvgIndex = 0;
@@ -124,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         _graph_peaks.setSize(5);
         _graph_peaks.setColor(Color.RED);
         mag_graph.addSeries(_graph_peaks);
+        _graph_threshold = new LineGraphSeries<>();
+        _graph_threshold.setColor(Color.RED);
+        mag_graph.addSeries(_graph_threshold);
         mag_graph.getViewport().setXAxisBoundsManual(true);
         mag_graph.getViewport().setMinX(0);
         mag_graph.getViewport().setMaxX(MAX_GRAPH_POINTS);
@@ -221,13 +225,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public float[] calcMovingAverage(float[] val) {
 
-        /*if(!movingAvgInitialized) {
-            for(int i=0; i<3; i++) {
-                Arrays.fill(movingAvgVals[i], val[i]);
-            }
-            movingAvgInitialized = true;
-        }*/
-
         float avg[] = new float[3];
 
         for(int i=0; i<3; i++) {
@@ -279,6 +276,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 stepCount++;
                 peaks.put(startTime+i, values[i]);
             }
+
+            _graph_threshold.appendData(new DataPoint(startTime+i, peakMean*PEAK_RATIO_THRESHOLD), false, MAX_GRAPH_POINTS);
         }
 
         return peaks;
