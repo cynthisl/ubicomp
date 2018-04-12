@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     int stepsCounted = 0;
     double androidCounterBase = 0;
-    double lastAndroidStepCount;
+    double lastAndroidStepCount = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         aquariumView = findViewById(R.id.aquarium);
 
 
+        // initialize textviews
         _tv_x = findViewById(R.id.tv_x);
         _tv_y = findViewById(R.id.tv_y);
         _tv_z = findViewById(R.id.tv_z);
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        // initialize raw graph
         GraphView raw_graph = this.findViewById(R.id.raw_graph);
         _graph_x = new LineGraphSeries<>();
         _graph_x.setColor(Color.RED);
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         raw_graph.getViewport().setMinY(-10);
         raw_graph.getViewport().setMaxY(10);
 
+        // initialized magnitude graph
         GraphView mag_graph = this.findViewById(R.id.mag_graph);
         _graph_mag = new LineGraphSeries<>();
         mag_graph.addSeries(_graph_mag);
@@ -131,13 +134,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mag_graph.getViewport().setXAxisBoundsManual(true);
         mag_graph.getViewport().setMinX(0);
         mag_graph.getViewport().setMaxX(MAX_GRAPH_POINTS);
-        //mag_graph.getViewport().setYAxisBoundsManual(true);
-        //mag_graph.getViewport().setMinY(0);
-       // mag_graph.getViewport().setMaxY(7);
 
 
-
-
+        // set up sensors
         _sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         _accel = _sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         _sm.registerListener(this, _accel, SensorManager.SENSOR_DELAY_NORMAL);
@@ -209,6 +208,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case Sensor.TYPE_STEP_COUNTER:
 
+                // initialization
+                if(lastAndroidStepCount == -1) {
+                    androidCounterBase = event.values[0];
+                }
+
                 lastAndroidStepCount = event.values[0];
 
                 _tv_androidCount.setText("Android counter: " + (lastAndroidStepCount-androidCounterBase));
@@ -247,11 +251,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public Map<Long, Float> detectPeaks(float[] values, long startTime) {
 
+        // Mladenov’s algorithm from “A Step Counter Service for Java-Enabled Devices Using a Built-In Accelerometer.”
+
         Map<Long, Float> peaks = new LinkedHashMap<>();
 
         int peakCount = 0;
         float peakAccumulate = 0;
 
+        // find all the peaks
         for(int i=1; i<PEAK_WINDOW-1; i++){
             float fwd = values[i+1] - values[i];
             float back = values[i] - values[i-1];
@@ -266,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         int stepCount = 0;
 
+        // get all the peaks that are above threshold
         for(int i=1; i<PEAK_WINDOW-1; i++) {
             float fwd = values[i+1] - values[i];
             float back = values[i] - values[i-1];
@@ -277,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 peaks.put(startTime+i, values[i]);
             }
 
+            // this really should be where the rest of the graph is drawn, but it's here for debugging
             _graph_threshold.appendData(new DataPoint(startTime+i, peakMean*PEAK_RATIO_THRESHOLD), false, MAX_GRAPH_POINTS);
         }
 

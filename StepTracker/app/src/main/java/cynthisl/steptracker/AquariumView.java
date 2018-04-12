@@ -14,7 +14,7 @@ import android.view.View;
 import java.util.Vector;
 
 /**
- * TODO: document your custom view class.
+ * Aquarium View
  */
 public class AquariumView extends View {
 
@@ -27,6 +27,7 @@ public class AquariumView extends View {
     Vector<Fish> fishes;
 
     class Fish {
+        // class for holding fish data
         int left, top, length, height, color, speed;
         boolean swimLeft;
         public Fish(int l, int t, int len, int h, int c, boolean swimDir) {
@@ -78,6 +79,8 @@ public class AquariumView extends View {
 
     }
 
+    // Code for getting size of canvas from StackOverflow
+    // https://stackoverflow.com/questions/6652400/how-can-i-get-the-canvas-size-of-a-custom-view-outside-of-the-ondraw-method/6652621
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         canvasWidth = w;
@@ -102,8 +105,8 @@ public class AquariumView extends View {
 
         int left = (int)(Math.random() * canvasWidth);
         int top = (int)(Math.random() * canvasHeight);
-        int len = (int)(Math.random() * 250 + 20);
-        int height = (int)(Math.random() * 100 + 10);
+        int len = (int)(Math.random() * 250 + 50);
+        int height = (int)(Math.random() * 100 + 20);
         int col = Color.argb(255, (int)(Math.random()*256), (int)(Math.random()*256), (int)(Math.random()*256));
         boolean dir = (Math.random() < 0.5);
 
@@ -127,7 +130,7 @@ public class AquariumView extends View {
             Path tail = new Path();
             tail.setFillType(Path.FillType.EVEN_ODD);
             tail.moveTo((int) (left + len * .75), (int) (top + height * .5));
-            tail.lineTo((int) (left + len), (int) (top));
+            tail.lineTo((left + len), (top));
             tail.lineTo(left + len, top + height);
             tail.lineTo((int) (left + len * .75), (int) (top + height * .5));
             tail.close();
