@@ -97,8 +97,8 @@ public class AquariumView extends View {
         }
 
         paint.setColor(Color.BLACK);
-        paint.setTextSize(20);
-        canvas.drawText("Steps: " + stepCount, 20, 30, paint);
+        paint.setTextSize(50);
+        canvas.drawText("Steps: " + stepCount, 20, 50, paint);
     }
 
     public void addRandomFish() {
