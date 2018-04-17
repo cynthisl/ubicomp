@@ -24,12 +24,12 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
 
-    int MAX_GRAPH_POINTS = 250;
+    final int MAX_GRAPH_POINTS = 250;
 
-    float PEAK_RATIO_THRESHOLD = 0.8f;
-    float SAFETY = 0.5f;
-    int PEAK_WINDOW = 100;
-    int MOVING_AVG_SIZE = 25;
+    final float PEAK_RATIO_THRESHOLD = 0.8f;
+    final float SAFETY = 0.5f;
+    final int PEAK_WINDOW = 100;
+    final int MOVING_AVG_SIZE = 25;
 
     private long timestamp = 0;
     private float[] gravity = new float[3];
