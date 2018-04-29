@@ -36,6 +36,8 @@ const int TRIM_RED = A0;
 const int TRIM_GREEN = A1;
 const int TRIM_BLUE = A2;
 
+const int PHOTOCELL_IN = A3;
+
 
 // This routine runs only once upon reset
 void setup() {
@@ -51,6 +53,11 @@ void setup() {
   pinMode(TRIM_BLUE, INPUT);
   
   //RGB.control(true);
+}
+
+void printInt(String s, int i) {
+  Serial.print(s + ": ");
+  Serial.println(i);
 }
 
 // This routine loops forever
@@ -89,14 +96,27 @@ void setColor(int red, int green, int blue, int brightness)
   // brightness setting: http://forum.arduino.cc/index.php?topic=272862.0
   // can also use hex RGB
 
-  // LEDs are common anode
-    red = 255 - red;
-    green = 255 - green;
-    blue = 255 - blue;
 
-  /*
+  printInt("Raw Red", red);
+  printInt("Raw Green", green);
+  printInt("Raw Blue", blue);
+
+  
+  
   red = map(red, 0, 255, 0, brightness);
-  */
+  green = map(green, 0, 255, 0, brightness);
+  blue = map(blue, 0, 255, 0, brightness);
+
+  // LEDs are common anode
+  red = 255 - red;
+  green = 255 - green;
+  blue = 255 - blue;
+
+  
+  printInt("Set Red", red);
+  printInt("Set Green", green);
+  printInt("Set Blue", blue);
+
     
   analogWrite(LED1_RED_OUT, red);
   analogWrite(LED1_GREEN_OUT, green);
@@ -107,28 +127,24 @@ void updateColors() {
   int red = getColorFromPot(TRIM_RED);
   int green = getColorFromPot(TRIM_GREEN);
   int blue = getColorFromPot(TRIM_BLUE);
-  int brightness = 255;
+  int brightness = readBrightness();
 
   setColor(red, green, blue, brightness);
 }
 
 int getColorFromPot(int pin) {
   int val = analogRead(pin);
-  return map(val, 0, 1023, 0, 255);
-}
-
-void calcPhotocell() {
-  // https://learn.adafruit.com/photocells?view=all
-  // pulldown = sqrt(Rmin * Rmax)
+  return map(val, 0, 4092, 0, 255);
 }
 
 int readBrightness() {
-  // https://www.arduino.cc/en/tutorial/potentiometer
 
-  //int val = analogRead(potPin);
-  //return map(val, 0, 1023, 0, 255);
+  // https://learn.adafruit.com/photocells?view=all
+  // pulldown = sqrt(Rmin * Rmax)
+  int val = analogRead(PHOTOCELL_IN);
+  printInt("Photocell", val);
+  val = 1023 - val;
+  return map(val, 0, 1023, 0, 255);
   //TODO: is 1023 right value, higher in class
-  return 0;
-  
 }
 
