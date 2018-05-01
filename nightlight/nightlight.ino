@@ -32,9 +32,7 @@ const int LED1_RED_OUT = D0;
 const int LED1_GREEN_OUT = D1;
 const int LED1_BLUE_OUT = D2;
 
-const int TRIM_RED = A0;
-const int TRIM_GREEN = A1;
-const int TRIM_BLUE = A2;
+const int HUE_SELECT_IN = A0;
 
 const int PHOTOCELL_IN = A3;
 
@@ -48,9 +46,8 @@ void setup() {
   pinMode(LED1_GREEN_OUT, OUTPUT);
   pinMode(LED1_BLUE_OUT, OUTPUT);
 
-  pinMode(TRIM_RED, INPUT);
-  pinMode(TRIM_GREEN, INPUT);
-  pinMode(TRIM_BLUE, INPUT);
+  pinMode(HUE_SELECT_IN, INPUT);
+  pinMode(PHOTOCELL_IN, INPUT);
   
   //RGB.control(true);
 }
@@ -62,45 +59,20 @@ void printInt(String s, int i) {
 
 // This routine loops forever
 void loop() {
-  /*RGB.color(255, 0, 0);                 // set LED to RED
-  delay(500);
-  
-  RGB.color(0, 255 ,0);                 // set LED to GREEN
-  delay(500);
-  
-  RGB.color(0, 0,255);                 // set LED to BLUE
-  delay(500);*/
-
-  /*
-  setColor(255, 0, 0, 255);  // red
-  delay(1000);
-  setColor(0, 255, 0, 255);  // green
-  delay(1000);
-  setColor(0, 0, 255, 255);  // blue
-  delay(1000);
-  setColor(255, 255, 0, 255);  // yellow
-  delay(1000);  
-  setColor(80, 0, 80, 255);  // purple
-  delay(1000);
-  setColor(0, 255, 255, 255);  // aqua
-  delay(1000);
-  */
 
   updateColors();
   delay(100);
   
 }
 
-void setColor(int red, int green, int blue, int brightness)
+void setColor(byte red, byte green, byte blue, int brightness)
 {
   // brightness setting: http://forum.arduino.cc/index.php?topic=272862.0
   // can also use hex RGB
 
-
-  printInt("Raw Red", red);
-  printInt("Raw Green", green);
-  printInt("Raw Blue", blue);
-
+  //printInt("Raw Red", red);
+  //printInt("Raw Green", green);
+  //printInt("Raw Blue", blue);
   
   
   red = map(red, 0, 255, 0, brightness);
@@ -111,26 +83,12 @@ void setColor(int red, int green, int blue, int brightness)
   red = 255 - red;
   green = 255 - green;
   blue = 255 - blue;
-
-  
-  printInt("Set Red", red);
-  printInt("Set Green", green);
-  printInt("Set Blue", blue);
-
     
   analogWrite(LED1_RED_OUT, red);
   analogWrite(LED1_GREEN_OUT, green);
   analogWrite(LED1_BLUE_OUT, blue);  
 }
 
-void updateColors() {
-  int red = getColorFromPot(TRIM_RED);
-  int green = getColorFromPot(TRIM_GREEN);
-  int blue = getColorFromPot(TRIM_BLUE);
-  int brightness = readBrightness();
-
-  setColor(red, green, blue, brightness);
-}
 
 int getColorFromPot(int pin) {
   int val = analogRead(pin);
@@ -141,10 +99,78 @@ int readBrightness() {
 
   // https://learn.adafruit.com/photocells?view=all
   // pulldown = sqrt(Rmin * Rmax)
+  int photoMax = 4092;
   int val = analogRead(PHOTOCELL_IN);
   printInt("Photocell", val);
-  val = 1023 - val;
-  return map(val, 0, 1023, 0, 255);
+  val = photoMax - val;
+  return map(val, 0, photoMax, 0, 255);
   //TODO: is 1023 right value, higher in class
 }
 
+void updateColors() {
+
+    int hue  = getColorFromPot(HUE_SELECT_IN);
+  int brightness = readBrightness();
+
+    byte r, g, b;
+
+    HSV_to_RGB((float)hue, &r, &g, &b);
+
+    printInt("Hue", hue);
+    printInt("R", r);
+    printInt("G", g);
+    printInt("B", b);
+
+    
+    setColor(r, g, b, brightness);
+    
+}
+void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
+{
+    //https://gist.github.com/hdznrrd/656996
+  int i;
+  float f, p, q, t;
+  
+  h = max(0.0, min(360.0, h));
+  float s = 1;
+  float v = 1;
+  
+
+  h /= 60; // sector 0 to 5
+  i = floor(h);
+  f = h - i; // factorial part of h
+  p = v * (1 - s);
+  q = v * (1 - s * f);
+  t = v * (1 - s * (1 - f));
+  switch(i) {
+    case 0:
+      *r = round(255*v);
+      *g = round(255*t);
+      *b = round(255*p);
+      break;
+    case 1:
+      *r = round(255*q);
+      *g = round(255*v);
+      *b = round(255*p);
+      break;
+    case 2:
+      *r = round(255*p);
+      *g = round(255*v);
+      *b = round(255*t);
+      break;
+    case 3:
+      *r = round(255*p);
+      *g = round(255*q);
+      *b = round(255*v);
+      break;
+    case 4:
+      *r = round(255*t);
+      *g = round(255*p);
+      *b = round(255*v);
+      break;
+    default: // case 5:
+      *r = round(255*v);
+      *g = round(255*p);
+      *b = round(255*q);
+    }
+}
