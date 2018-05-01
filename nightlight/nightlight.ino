@@ -33,7 +33,7 @@ const int LED1_GREEN_OUT = D1;
 const int LED1_BLUE_OUT = D2;
 
 const int HUE_SELECT_IN = A0;
-
+const int HALL_SENSOR_IN = A1;
 const int PHOTOCELL_IN = A3;
 
 
@@ -61,6 +61,9 @@ void printInt(String s, int i) {
 void loop() {
 
   updateColors();
+  if(readHallEffect()) {
+    setColor(0,255,0,255);
+  }
   delay(100);
   
 }
@@ -173,4 +176,17 @@ void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
       *g = round(255*p);
       *b = round(255*q);
     }
+}
+
+
+bool readHallEffect() {
+    // https://playground.arduino.cc/Code/HallEffect
+    int mag = analogRead(HALL_SENSOR_IN);
+    bool magnet = false;
+    printInt("Hall", mag);
+
+    if(mag < 500) {
+        magnet = true;
+    }
+    return magnet;
 }
