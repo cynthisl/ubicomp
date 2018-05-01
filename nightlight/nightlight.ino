@@ -122,28 +122,14 @@ int readBrightness() {
   //TODO: is 1023 right value, higher in class
 }
 
-Color getLEDColor() {
 
-    int hue  = getColorFromPot(HUE_SELECT_IN);
-
-    byte r, g, b;
-
-    HSV_to_RGB((float)hue, &r, &g, &b);
-
-    printInt("Hue", hue);
-    printInt("R", r);
-    printInt("G", g);
-    printInt("B", b);
-
-
-    return {r,g,b};    
-}
-
-void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
+Color getLEDColor()
 {
-    //https://gist.github.com/hdznrrd/656996
+   //https://gist.github.com/hdznrrd/656996
   int i;
   float f, p, q, t;
+  float h  = getColorFromPot(HUE_SELECT_IN);
+  byte r, g, b;
   
   h = max(0.0, min(360.0, h));
   float s = 1;
@@ -158,35 +144,36 @@ void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
   t = v * (1 - s * (1 - f));
   switch(i) {
     case 0:
-      *r = round(255*v);
-      *g = round(255*t);
-      *b = round(255*p);
+      r = round(255*v);
+      g = round(255*t);
+      b = round(255*p);
       break;
     case 1:
-      *r = round(255*q);
-      *g = round(255*v);
-      *b = round(255*p);
+      r = round(255*q);
+      g = round(255*v);
+      b = round(255*p);
       break;
     case 2:
-      *r = round(255*p);
-      *g = round(255*v);
-      *b = round(255*t);
+      r = round(255*p);
+      g = round(255*v);
+      b = round(255*t);
       break;
     case 3:
-      *r = round(255*p);
-      *g = round(255*q);
-      *b = round(255*v);
+      r = round(255*p);
+      g = round(255*q);
+      b = round(255*v);
       break;
     case 4:
-      *r = round(255*t);
-      *g = round(255*p);
-      *b = round(255*v);
+      r = round(255*t);
+      g = round(255*p);
+      b = round(255*v);
       break;
     default: // case 5:
-      *r = round(255*v);
-      *g = round(255*p);
-      *b = round(255*q);
+      r = round(255*v);
+      g = round(255*p);
+      b = round(255*q);
     }
+  return {r, g, b};
 }
 
 Color invert(Color c) {
