@@ -36,6 +36,12 @@ const int HUE_SELECT_IN = A0;
 const int HALL_SENSOR_IN = A1;
 const int PHOTOCELL_IN = A3;
 
+struct Color {
+    byte red;
+    byte green;
+    byte blue;
+};
+
 
 // This routine runs only once upon reset
 void setup() {
@@ -60,15 +66,19 @@ void printInt(String s, int i) {
 // This routine loops forever
 void loop() {
 
-  updateColors();
+  Color c;
+  int brightness = readBrightness();
+
+  c = getLEDColor();
   if(readHallEffect()) {
-    setColor(0,255,0,255);
-  }
+    c = invert(c);
+  } 
+  setLEDColor(c, brightness);
   delay(100);
   
 }
 
-void setColor(byte red, byte green, byte blue, int brightness)
+void setLEDColor(Color c, int brightness)
 {
   // brightness setting: http://forum.arduino.cc/index.php?topic=272862.0
   // can also use hex RGB
@@ -76,11 +86,13 @@ void setColor(byte red, byte green, byte blue, int brightness)
   //printInt("Raw Red", red);
   //printInt("Raw Green", green);
   //printInt("Raw Blue", blue);
+
+  byte red, green, blue;
   
   
-  red = map(red, 0, 255, 0, brightness);
-  green = map(green, 0, 255, 0, brightness);
-  blue = map(blue, 0, 255, 0, brightness);
+  red = map(c.red, 0, 255, 0, brightness);
+  green = map(c.green, 0, 255, 0, brightness);
+  blue = map(c.blue, 0, 255, 0, brightness);
 
   // LEDs are common anode
   red = 255 - red;
@@ -110,10 +122,9 @@ int readBrightness() {
   //TODO: is 1023 right value, higher in class
 }
 
-void updateColors() {
+Color getLEDColor() {
 
     int hue  = getColorFromPot(HUE_SELECT_IN);
-  int brightness = readBrightness();
 
     byte r, g, b;
 
@@ -124,10 +135,10 @@ void updateColors() {
     printInt("G", g);
     printInt("B", b);
 
-    
-    setColor(r, g, b, brightness);
-    
+
+    return {r,g,b};    
 }
+
 void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
 {
     //https://gist.github.com/hdznrrd/656996
@@ -178,6 +189,9 @@ void HSV_to_RGB(float h, byte *r, byte *g, byte *b)
     }
 }
 
+Color invert(Color c) {
+    return {abs(255-c.red), abs(255-c.green), abs(255-c.blue)};
+}
 
 bool readHallEffect() {
     // https://playground.arduino.cc/Code/HallEffect
