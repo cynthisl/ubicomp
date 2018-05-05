@@ -36,11 +36,15 @@ const int HUE_SELECT_IN = A0;
 const int HALL_SENSOR_IN = A1;
 const int PHOTOCELL_IN = A3;
 
+const int COLOR_SPEED = 1;
+
 struct Color {
     byte red;
     byte green;
     byte blue;
 };
+
+Color c;
 
 
 // This routine runs only once upon reset
@@ -56,6 +60,7 @@ void setup() {
   pinMode(PHOTOCELL_IN, INPUT);
   
   //RGB.control(true);
+  c = {255, 0, 0};
 }
 
 void printInt(String s, int i) {
@@ -66,16 +71,103 @@ void printInt(String s, int i) {
 // This routine loops forever
 void loop() {
 
-  Color c;
+ /* Color c;
   int brightness = readBrightness();
 
   c = getLEDColor();
   if(readHallEffect()) {
     c = invert(c);
   } 
-  setLEDColor(c, brightness);
-  delay(100);
+  setLEDColor(c, brightness);*/
+  c = cycleColor(c);
+  setLEDColor(c, 255);
   
+  delay(10);
+  
+}
+
+Color cycleColor(Color old) {
+  // order is this:
+  // R -> G -> B
+  // R->G, B 0, R 255-0, G 0-255
+  // G->B, R 0 G 255-0 B 0 - 255
+  // B->R, G 0 B 255-0 R 0-255
+  enum ColorChange {
+    Off,
+    RedToGreen,
+    GreenToBlue,
+    BlueToRed
+  };
+
+  ColorChange cc;
+
+  // recast to accept overflow
+  int r = old.red;
+  int g = old.green;
+  int b = old.blue;
+
+  // find state
+  if(b == 0 && g == 0) {
+    cc = RedToGreen;
+  } else if(r == 0 && b == 0) {
+    cc = GreenToBlue;
+  } else if(g== 0 && r == 0) {
+    cc = BlueToRed;
+  } else if(b == 0) {
+    cc = RedToGreen;
+  } else if(r == 0) {
+    cc = GreenToBlue;
+  } else if(g == 0) {
+    cc = BlueToRed;
+  } else {
+    cc = Off;
+  }
+
+  // find which color is currently 0
+  // assume never off
+  // TODO this is wrong, what if on the cusp of changing
+  switch(cc) {
+    case RedToGreen:
+      // R -> G
+      // increase R, decrease G
+      r -= COLOR_SPEED;
+      g += COLOR_SPEED;
+  
+      if(r < 0 || g > 255) {
+        // change to g->b
+        r = 0;
+        g = 255;
+        
+      }
+      break;
+    
+    case GreenToBlue:
+      g -= COLOR_SPEED;
+      b += COLOR_SPEED;
+  
+      if(g < 0 || b > 255) {
+        g = 0;
+        b = 255;
+      }
+      break;
+      
+    case BlueToRed:
+      b -= COLOR_SPEED;
+      r += COLOR_SPEED;
+  
+      if(b < 0 || r > 255) {
+        b = 0;
+        r = 255;
+      }
+      break;
+    case Off:
+    default:
+      r = 0;
+      g = 0;
+      b = 0;
+  }
+  
+  return {r, g, b};
 }
 
 void setLEDColor(Color c, int brightness)
