@@ -33,8 +33,9 @@ const int LED1_GREEN_OUT = D1;
 const int LED1_BLUE_OUT = D2;
 
 const int HUE_SELECT_IN = A0;
-const int HALL_SENSOR_IN = A1;
+const int HALL_SENSOR_IN = A5;
 const int PHOTOCELL_IN = A3;
+const int FSR_IN = A0;
 
 const int COLOR_SPEED = 1;
 
@@ -44,7 +45,7 @@ struct Color {
     byte blue;
 };
 
-Color c;
+Color led_color;
 
 
 // This routine runs only once upon reset
@@ -58,9 +59,10 @@ void setup() {
 
   pinMode(HUE_SELECT_IN, INPUT);
   pinMode(PHOTOCELL_IN, INPUT);
+  pinMode(FSR_IN, INPUT);
   
   //RGB.control(true);
-  c = {255, 0, 0};
+  led_color = {255, 0, 0};
 }
 
 void printInt(String s, int i) {
@@ -71,17 +73,18 @@ void printInt(String s, int i) {
 // This routine loops forever
 void loop() {
 
- /* Color c;
   int brightness = readBrightness();
+  
+  if(readFSR()) {
+    led_color = cycleColor(led_color);
+  }
+  Color c = led_color;
 
-  c = getLEDColor();
   if(readHallEffect()) {
     c = invert(c);
   } 
-  setLEDColor(c, brightness);*/
-  c = cycleColor(c);
-  setLEDColor(c, 255);
-  
+  setLEDColor(c, brightness);
+
   delay(10);
   
 }
@@ -283,3 +286,16 @@ bool readHallEffect() {
     }
     return magnet;
 }
+
+bool readFSR() {
+  // https://learn.adafruit.com/force-sensitive-resistor-fsr/using-an-fsr
+  int val = analogRead(FSR_IN);
+  printInt("FSR", val);
+  bool pressed = false;
+
+  if(val > 1000) {
+    pressed = true;
+  }
+  return pressed;
+}
+
