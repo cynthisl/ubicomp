@@ -22,6 +22,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,13 +45,14 @@ import cynthisl.nightlight_controller.BLE.RBLGattAttributes;
 import cynthisl.nightlight_controller.BLE.RBLService;
 
 import java.util.Locale;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cynthisl.nightlight_controller.BLE.RBLGattAttributes;
 import cynthisl.nightlight_controller.BLE.RBLService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener{
     // Define the device name and the length of the name
     // Note the device name and the length should be consistent with the ones defined in the Duo sketch
     private String mTargetDeviceName = "Bunny";
@@ -70,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView redText = null;
     private TextView greenText = null;
     private TextView blueText = null;
+    private ToggleButton mRaveModeBtn;
+    boolean mRaveModeOn = false;
+    Random rnd = new Random();
+
+    private float[] gravity = new float[3];
+
 
     // Declare all Bluetooth stuff
     private BluetoothGattCharacteristic mCharacteristicTx = null;
@@ -323,8 +334,13 @@ public class MainActivity extends AppCompatActivity {
         colorPicker = (ColorPicker) findViewById(R.id.color_picker);
         colorPicker.setShowOldCenterColor(false);
         redText = (TextView) findViewById(R.id.redVal);
+        mRaveModeBtn = (ToggleButton) findViewById(R.id.raveButton);
 
-
+        SensorManager sm;
+        Sensor accel;
+        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accel = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sm.registerListener(this, accel,1000000, 1000000);
 
 
         // Connection button click event
@@ -382,17 +398,14 @@ public class MainActivity extends AppCompatActivity {
             public void onColorChanged(int color) {
                 //redText.setText(Color.red(color) + " " + Color.green(color) + " " + Color.blue(color));
 
-                byte buf[] = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00 };
+                sendColor(color);
+            }
+        });
 
-
-
-                buf[1] = (byte) (Color.red(color) & 0xFF);
-                buf[2] = (byte) (Color.green(color) & 0xFF);
-                buf[3] = (byte) (Color.blue(color) & 0xFF);
-                redText.setText(buf[1] + " " + buf[2] + " " + buf[3]);
-
-                mCharacteristicTx.setValue(buf);
-                mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
+        mRaveModeBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mRaveModeOn = b;
             }
         });
 
@@ -509,6 +522,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void sendColor(int c) {
+        byte buf[] = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00 };
+
+        buf[1] = (byte) (Color.red(c) & 0xFF);
+        buf[2] = (byte) (Color.green(c) & 0xFF);
+        buf[3] = (byte) (Color.blue(c) & 0xFF);
+
+        if(mCharacteristicTx != null) {
+            mCharacteristicTx.setValue(buf);
+            mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -564,5 +590,65 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        switch(event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+
+                // Gravity removal code from Android documentation
+                // https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-accel
+
+                if (mRaveModeOn) {
+                    final float alpha = 0.8f;
+                    float acceleration = 0;
+                    float x, y, z;
+
+                    // Isolate the force of gravity with the low-pass filter.
+                    gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+                    gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+                    gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+                    // Remove the gravity contribution with the high-pass filter.
+                    x = event.values[0] - gravity[0];
+                    y = event.values[1] - gravity[1];
+                    z = event.values[2] - gravity[2];
+
+                    acceleration = x * x + y * y + z * z;
+
+                    if (acceleration > 1) {
+                        // rave mode!
+                        int c = 0;
+                        int rand1 = rnd.nextInt(256);
+                        int rand2 = rnd.nextInt(256);
+                        int zero = rnd.nextInt(3);
+                        switch(zero) {
+                            case 0:
+                                c = Color.rgb(0, rand1, rand2);
+                                break;
+                            case 1:
+                                c = Color.rgb(rand1, 0, rand2);
+                                break;
+                            case 2:
+                                c = Color.rgb(rand1, rand2, 0);
+                                break;
+                        }
+                        sendColor(c);
+
+                    }
+                    else {
+                        sendColor(0);
+                    }
+                }
+                break;
+
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }

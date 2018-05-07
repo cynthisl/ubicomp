@@ -44,35 +44,36 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="383" column="0" lean-forward="true" selection-start-line="383" selection-start-column="0" selection-end-line="383" selection-end-column="0" />
+            <state relative-caret-position="4">
+              <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
               <folding>
-                <element signature="e#0#20870#0" expanded="true" />
+                <element signature="e#0#23978#0" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#4951#6013#0" expanded="true" />
-                <element signature="e#6012#6013#0" expanded="true" />
-                <element signature="method#getGattService#0;class#MainActivity#0" expanded="false" />
+                <element signature="e#5308#6370#0" expanded="true" />
+                <element signature="e#6369#6370#0" expanded="true" />
                 <element signature="method#startReadRssi#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#7682#8039#0" expanded="true" />
-                <element signature="e#8038#8039#0" expanded="true" />
+                <element signature="e#8039#8396#0" expanded="true" />
+                <element signature="e#8395#8396#0" expanded="true" />
                 <element signature="method#scanLeDevice#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#8144#8545#0" expanded="true" />
-                <element signature="e#8544#8545#0" expanded="true" />
-                <element signature="e#8816#10187#0" expanded="true" />
-                <element signature="e#9032#10169#0" expanded="true" />
-                <element signature="e#10168#10169#0" expanded="true" />
-                <element signature="e#10186#10187#0" expanded="true" />
-                <element signature="e#12426#14297#0" expanded="true" />
-                <element signature="e#12745#13897#0" expanded="true" />
-                <element signature="e#13174#13817#0" expanded="true" />
-                <element signature="e#13816#13817#0" expanded="true" />
-                <element signature="e#13896#13897#0" expanded="true" />
-                <element signature="e#14296#14297#0" expanded="true" />
-                <element signature="e#14517#15240#0" expanded="true" />
-                <element signature="e#15239#15240#0" expanded="true" />
+                <element signature="e#8501#8902#0" expanded="true" />
+                <element signature="e#8901#8902#0" expanded="true" />
+                <element signature="e#9173#10544#0" expanded="true" />
+                <element signature="e#9389#10526#0" expanded="true" />
+                <element signature="e#10525#10526#0" expanded="true" />
+                <element signature="e#10543#10544#0" expanded="true" />
+                <element signature="e#13093#14964#0" expanded="true" />
+                <element signature="e#13412#14564#0" expanded="true" />
+                <element signature="e#13841#14484#0" expanded="true" />
+                <element signature="e#14483#14484#0" expanded="true" />
+                <element signature="e#14563#14564#0" expanded="true" />
+                <element signature="e#14963#14964#0" expanded="true" />
+                <element signature="e#15184#15465#0" expanded="true" />
+                <element signature="e#15464#15465#0" expanded="true" />
+                <element signature="e#15517#15727#0" expanded="true" />
+                <element signature="e#15726#15727#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -88,11 +89,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="15" column="30" lean-forward="false" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+            <state relative-caret-position="108">
+              <caret line="6" column="23" lean-forward="false" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -104,8 +105,8 @@
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="407" column="0" lean-forward="false" selection-start-line="407" selection-start-column="0" selection-end-line="407" selection-end-column="0" />
+            <state relative-caret-position="203">
+              <caret line="147" column="16" lean-forward="false" selection-start-line="147" selection-start-column="16" selection-end-line="147" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -2136,15 +2137,15 @@
       <list>
         <option value="$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/BLE/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="580" />
-    <option name="y" value="80" />
+    <option name="x" value="644" />
+    <option name="y" value="68" />
     <option name="width" value="1251" />
     <option name="height" value="1000" />
   </component>
@@ -2399,8 +2400,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="580" y="80" width="1251" height="1000" extended-state="0" />
-    <editor active="true" />
+    <frame x="644" y="68" width="1251" height="1000" extended-state="0" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -2409,16 +2409,16 @@
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.50300944" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28253224" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2821577" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4662085" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.255441" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24935512" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.49699053" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Build" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3298969" sideWeight="0.49699053" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291536" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2450,14 +2450,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="15" column="30" lean-forward="false" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
@@ -2469,6 +2461,17 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="147" column="16" lean-forward="false" selection-start-line="147" selection-start-column="16" selection-end-line="147" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -2477,46 +2480,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="407" column="0" lean-forward="false" selection-start-line="407" selection-start-column="0" selection-end-line="407" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="4">
+          <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#23978#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#5308#6370#0" expanded="true" />
+            <element signature="e#6369#6370#0" expanded="true" />
+            <element signature="method#startReadRssi#0;class#MainActivity#0" expanded="false" />
+            <element signature="e#8039#8396#0" expanded="true" />
+            <element signature="e#8395#8396#0" expanded="true" />
+            <element signature="method#scanLeDevice#0;class#MainActivity#0" expanded="false" />
+            <element signature="e#8501#8902#0" expanded="true" />
+            <element signature="e#8901#8902#0" expanded="true" />
+            <element signature="e#9173#10544#0" expanded="true" />
+            <element signature="e#9389#10526#0" expanded="true" />
+            <element signature="e#10525#10526#0" expanded="true" />
+            <element signature="e#10543#10544#0" expanded="true" />
+            <element signature="e#13093#14964#0" expanded="true" />
+            <element signature="e#13412#14564#0" expanded="true" />
+            <element signature="e#13841#14484#0" expanded="true" />
+            <element signature="e#14483#14484#0" expanded="true" />
+            <element signature="e#14563#14564#0" expanded="true" />
+            <element signature="e#14963#14964#0" expanded="true" />
+            <element signature="e#15184#15465#0" expanded="true" />
+            <element signature="e#15464#15465#0" expanded="true" />
+            <element signature="e#15517#15727#0" expanded="true" />
+            <element signature="e#15726#15727#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="383" column="0" lean-forward="true" selection-start-line="383" selection-start-column="0" selection-end-line="383" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20870#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-            <element signature="e#4951#6013#0" expanded="true" />
-            <element signature="e#6012#6013#0" expanded="true" />
-            <element signature="method#getGattService#0;class#MainActivity#0" expanded="false" />
-            <element signature="method#startReadRssi#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#7682#8039#0" expanded="true" />
-            <element signature="e#8038#8039#0" expanded="true" />
-            <element signature="method#scanLeDevice#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#8144#8545#0" expanded="true" />
-            <element signature="e#8544#8545#0" expanded="true" />
-            <element signature="e#8816#10187#0" expanded="true" />
-            <element signature="e#9032#10169#0" expanded="true" />
-            <element signature="e#10168#10169#0" expanded="true" />
-            <element signature="e#10186#10187#0" expanded="true" />
-            <element signature="e#12426#14297#0" expanded="true" />
-            <element signature="e#12745#13897#0" expanded="true" />
-            <element signature="e#13174#13817#0" expanded="true" />
-            <element signature="e#13816#13817#0" expanded="true" />
-            <element signature="e#13896#13897#0" expanded="true" />
-            <element signature="e#14296#14297#0" expanded="true" />
-            <element signature="e#14517#15240#0" expanded="true" />
-            <element signature="e#15239#15240#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="108">
+          <caret line="6" column="23" lean-forward="false" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
