@@ -477,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                byte[] buf = new byte[] { (byte) 0x02, (byte) 0x00, (byte) 0x00 };
+                byte[] buf = new byte[] { (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
                 buf[1] = (byte) mPWMSeekBar.getProgress();
 

@@ -47,10 +47,10 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="387" column="0" lean-forward="true" selection-start-line="387" selection-start-column="0" selection-end-line="387" selection-end-column="0" />
+            <state relative-caret-position="144">
+              <caret line="383" column="0" lean-forward="true" selection-start-line="383" selection-start-column="0" selection-end-line="383" selection-end-column="0" />
               <folding>
-                <element signature="e#0#20858#0" expanded="true" />
+                <element signature="e#0#20870#0" expanded="true" />
                 <element signature="imports" expanded="true" />
                 <element signature="e#4951#6013#0" expanded="true" />
                 <element signature="e#6012#6013#0" expanded="true" />
@@ -2490,10 +2490,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="387" column="0" lean-forward="true" selection-start-line="387" selection-start-column="0" selection-end-line="387" selection-end-column="0" />
+        <state relative-caret-position="144">
+          <caret line="383" column="0" lean-forward="true" selection-start-line="383" selection-start-column="0" selection-end-line="383" selection-end-column="0" />
           <folding>
-            <element signature="e#0#20858#0" expanded="true" />
+            <element signature="e#0#20870#0" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#4951#6013#0" expanded="true" />
             <element signature="e#6012#6013#0" expanded="true" />
