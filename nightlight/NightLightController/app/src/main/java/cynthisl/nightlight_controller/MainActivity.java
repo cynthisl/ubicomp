@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private String mBluetoothDeviceUUID = "";
 
     private ColorPicker colorPicker = null;
-    private TextView redText = null;
-    private TextView greenText = null;
-    private TextView blueText = null;
     private ToggleButton mRaveModeBtn;
     boolean mRaveModeOn = false;
     Random rnd = new Random();
@@ -323,7 +320,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         colorPicker = (ColorPicker) findViewById(R.id.color_picker);
         colorPicker.setShowOldCenterColor(false);
-        redText = (TextView) findViewById(R.id.redVal);
         mRaveModeBtn = (ToggleButton) findViewById(R.id.raveButton);
 
         SensorManager sm;
@@ -386,20 +382,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         colorPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
-                //redText.setText(Color.red(color) + " " + Color.green(color) + " " + Color.blue(color));
 
                 sendColor(color);
             }
         });
 
+        // Button to turn off and on rave mode
         mRaveModeBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 mRaveModeOn = b;
             }
         });
-
-
 
 
         // Bluetooth setup. Created by the RedBear team.
@@ -425,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    // Helper function to send a color command to RedBear
     private void sendColor(int c) {
         byte buf[] = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00 };
 
@@ -535,33 +530,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int c = Color.rgb(r, g, b);
                     sendColor(c);
 
-                    /*
-                    acceleration = x * x + y * y + z * z;
-
-                    if (acceleration > 1) {
-                        // rave mode!
-                        int c = 0;
-                        int rand1 = rnd.nextInt(256);
-                        int rand2 = rnd.nextInt(256);
-                        int zero = rnd.nextInt(3);
-                        switch(zero) {
-                            case 0:
-                                c = Color.rgb(0, rand1, rand2);
-                                break;
-                            case 1:
-                                c = Color.rgb(rand1, 0, rand2);
-                                break;
-                            case 2:
-                                c = Color.rgb(rand1, rand2, 0);
-                                break;
-                        }
-                        sendColor(c);
-
-                    }
-                    else {
-                        sendColor(0);
-                    }
-                    */
                 }
 
                 break;
