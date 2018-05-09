@@ -244,9 +244,9 @@ void printInt(String s, int i) {
 void loop() {  
   int brightness = readBrightness();
   
-  /*if(readFSR()) {
+  if(readFSR()) {
     led_color = cycleColor(led_color);
-  }*/
+  }
   Color c = led_color;
 
   if(readHallEffect()) {

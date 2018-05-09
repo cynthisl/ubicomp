@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView mRssiValue = null;
     private TextView mUUID = null;
     private TextView mAnalogInValue = null;
-    private ToggleButton mDigitalOutBtn, mDigitalInBtn, mAnalogInBtn;
-    private SeekBar mServoSeekBar, mPWMSeekBar;
     private String mBluetoothDeviceName = "";
     private String mBluetoothDeviceUUID = "";
 
@@ -124,10 +122,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         flag = false;
         mConnState = false;
 
-        /*mDigitalOutBtn.setEnabled(flag);
-        mAnalogInBtn.setEnabled(flag);
-        mServoSeekBar.setEnabled(flag);*/
-        mPWMSeekBar.setEnabled(flag);
+        colorPicker.setEnabled(flag);
+        mRaveModeBtn.setEnabled(flag);
         mConnectBtn.setText("Connect");
         mRssiValue.setText("");
         mDeviceName.setText("");
@@ -138,10 +134,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         flag = true;
         mConnState = true;
 
-        /*mDigitalOutBtn.setEnabled(flag);
-        mAnalogInBtn.setEnabled(flag);
-        mServoSeekBar.setEnabled(flag);*/
-        mPWMSeekBar.setEnabled(flag);
+        colorPicker.setEnabled(flag);
+        mRaveModeBtn.setEnabled(flag);
         mConnectBtn.setText("Disconnect");
     }
 
@@ -164,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             } else if (RBLService.ACTION_DATA_AVAILABLE.equals(action)) {
                 mData = intent.getByteArrayExtra(RBLService.EXTRA_DATA);
 
-                readAnalogInValue(mData);
+                //TODO if reading in data update this
+                //readAnalogInValue(mData);
             } else if (RBLService.ACTION_GATT_RSSI.equals(action)) {
                 displayData(intent.getStringExtra(RBLService.EXTRA_DATA));
             }
@@ -181,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     // Display the received Analog/Digital read on the interface
+    /*
     private void readAnalogInValue(byte[] data) {
         for (int i = 0; i < data.length; i += 3) {
             if (data[i] == 0x0A) {
@@ -197,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mAnalogInValue.setText(Value + "");
             }
         }
-    }
+    }*/
 
     // Get Gatt service information for setting up the communication
     private void getGattService(BluetoothGattService gattService) {
@@ -323,12 +319,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mConnectBtn = (Button) findViewById(R.id.connectBtn);
         mDeviceName = (TextView) findViewById(R.id.deviceName);
         mRssiValue = (TextView) findViewById(R.id.rssiValue);
-        /*mAnalogInValue = (TextView) findViewById(R.id.ananlogIn);
-        mDigitalOutBtn = (ToggleButton) findViewById(R.id.DOutBtn);
-        mDigitalInBtn = (ToggleButton) findViewById(R.id.DInBtn);
-        mAnalogInBtn = (ToggleButton) findViewById(R.id.AInBtn);
-        mServoSeekBar = (SeekBar) findViewById(R.id.ServoSeekBar);*/
-        mPWMSeekBar = (SeekBar) findViewById(R.id.PWMSeekBar);
         mUUID = (TextView) findViewById(R.id.uuidValue);
 
         colorPicker = (ColorPicker) findViewById(R.id.color_picker);
@@ -340,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Sensor accel;
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sm.registerListener(this, accel,1000000, 1000000);
+        sm.registerListener(this, accel,3000000, 3000000);
 
 
         // Connection button click event
@@ -409,95 +399,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-    /*
-        mDigitalOutBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                byte buf[] = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00 };
-
-                if (isChecked == true)
-                    buf[1] = 0x01;
-                else
-                    buf[1] = 0x00;
-
-                mCharacteristicTx.setValue(buf);
-                mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
-            }
-        });
-
-        mAnalogInBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-                byte[] buf = new byte[] { (byte) 0xA0, (byte) 0x00, (byte) 0x00 };
-
-                if (isChecked == true)
-                    buf[1] = 0x01;
-                else
-                    buf[1] = 0x00;
-
-                mCharacteristicTx.setValue(buf);
-                mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
-            }
-        });
-
-        // Configure the servo Seekbar
-        mServoSeekBar.setEnabled(false);
-        mServoSeekBar.setMax(180);  // Servo can rotate from 0 to 180 degree
-        mServoSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                byte[] buf = new byte[] { (byte) 0x03, (byte) 0x00, (byte) 0x00 };
-
-                buf[1] = (byte) mServoSeekBar.getProgress();
-
-                mCharacteristicTx.setValue(buf);
-                mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
-            }
-        });
-    */
-        // Configure the PWM Seekbar
-        mPWMSeekBar.setEnabled(false);
-        mPWMSeekBar.setMax(255);
-        mPWMSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                byte[] buf = new byte[] { (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-
-                buf[1] = (byte) mPWMSeekBar.getProgress();
-
-                mCharacteristicTx.setValue(buf);
-                mBluetoothLeService.writeCharacteristic(mCharacteristicTx);
-            }
-        });
 
         // Bluetooth setup. Created by the RedBear team.
         if (!getPackageManager().hasSystemFeature(

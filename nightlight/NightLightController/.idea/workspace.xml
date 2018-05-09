@@ -44,36 +44,36 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4">
-              <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
+            <state relative-caret-position="130">
+              <caret line="290" column="52" lean-forward="false" selection-start-line="290" selection-start-column="52" selection-end-line="290" selection-end-column="52" />
               <folding>
-                <element signature="e#0#23978#0" expanded="true" />
+                <element signature="e#0#20343#0" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#5308#6370#0" expanded="true" />
-                <element signature="e#6369#6370#0" expanded="true" />
+                <element signature="e#5020#6138#0" expanded="true" />
+                <element signature="e#6137#6138#0" expanded="true" />
                 <element signature="method#startReadRssi#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#8039#8396#0" expanded="true" />
-                <element signature="e#8395#8396#0" expanded="true" />
+                <element signature="e#7816#8173#0" expanded="true" />
+                <element signature="e#8172#8173#0" expanded="true" />
                 <element signature="method#scanLeDevice#0;class#MainActivity#0" expanded="false" />
-                <element signature="e#8501#8902#0" expanded="true" />
-                <element signature="e#8901#8902#0" expanded="true" />
-                <element signature="e#9173#10544#0" expanded="true" />
-                <element signature="e#9389#10526#0" expanded="true" />
-                <element signature="e#10525#10526#0" expanded="true" />
-                <element signature="e#10543#10544#0" expanded="true" />
-                <element signature="e#13093#14964#0" expanded="true" />
-                <element signature="e#13412#14564#0" expanded="true" />
-                <element signature="e#13841#14484#0" expanded="true" />
-                <element signature="e#14483#14484#0" expanded="true" />
-                <element signature="e#14563#14564#0" expanded="true" />
-                <element signature="e#14963#14964#0" expanded="true" />
-                <element signature="e#15184#15465#0" expanded="true" />
-                <element signature="e#15464#15465#0" expanded="true" />
-                <element signature="e#15517#15727#0" expanded="true" />
-                <element signature="e#15726#15727#0" expanded="true" />
+                <element signature="e#8278#8679#0" expanded="true" />
+                <element signature="e#8678#8679#0" expanded="true" />
+                <element signature="e#8950#10321#0" expanded="true" />
+                <element signature="e#9166#10303#0" expanded="true" />
+                <element signature="e#10302#10303#0" expanded="true" />
+                <element signature="e#10320#10321#0" expanded="true" />
+                <element signature="e#12471#14342#0" expanded="true" />
+                <element signature="e#12790#13942#0" expanded="true" />
+                <element signature="e#13219#13862#0" expanded="true" />
+                <element signature="e#13861#13862#0" expanded="true" />
+                <element signature="e#13941#13942#0" expanded="true" />
+                <element signature="e#14341#14342#0" expanded="true" />
+                <element signature="e#14562#14843#0" expanded="true" />
+                <element signature="e#14842#14843#0" expanded="true" />
+                <element signature="e#14895#15105#0" expanded="true" />
+                <element signature="e#15104#15105#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,11 +89,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="6" column="23" lean-forward="false" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+            <state relative-caret-position="414">
+              <caret line="23" column="33" lean-forward="false" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -2138,8 +2138,8 @@
         <option value="$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/BLE/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
+        <option value="$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -2413,12 +2413,12 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.255441" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Logcat" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.255441" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24935512" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Build" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3298969" sideWeight="0.49699053" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.49699053" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291536" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2472,6 +2472,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="23" column="33" lean-forward="false" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -2482,42 +2490,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cynthisl/nightlight_controller/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4">
-          <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
+        <state relative-caret-position="130">
+          <caret line="290" column="52" lean-forward="false" selection-start-line="290" selection-start-column="52" selection-end-line="290" selection-end-column="52" />
           <folding>
-            <element signature="e#0#23978#0" expanded="true" />
+            <element signature="e#0#20343#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#5308#6370#0" expanded="true" />
-            <element signature="e#6369#6370#0" expanded="true" />
+            <element signature="e#5020#6138#0" expanded="true" />
+            <element signature="e#6137#6138#0" expanded="true" />
             <element signature="method#startReadRssi#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#8039#8396#0" expanded="true" />
-            <element signature="e#8395#8396#0" expanded="true" />
+            <element signature="e#7816#8173#0" expanded="true" />
+            <element signature="e#8172#8173#0" expanded="true" />
             <element signature="method#scanLeDevice#0;class#MainActivity#0" expanded="false" />
-            <element signature="e#8501#8902#0" expanded="true" />
-            <element signature="e#8901#8902#0" expanded="true" />
-            <element signature="e#9173#10544#0" expanded="true" />
-            <element signature="e#9389#10526#0" expanded="true" />
-            <element signature="e#10525#10526#0" expanded="true" />
-            <element signature="e#10543#10544#0" expanded="true" />
-            <element signature="e#13093#14964#0" expanded="true" />
-            <element signature="e#13412#14564#0" expanded="true" />
-            <element signature="e#13841#14484#0" expanded="true" />
-            <element signature="e#14483#14484#0" expanded="true" />
-            <element signature="e#14563#14564#0" expanded="true" />
-            <element signature="e#14963#14964#0" expanded="true" />
-            <element signature="e#15184#15465#0" expanded="true" />
-            <element signature="e#15464#15465#0" expanded="true" />
-            <element signature="e#15517#15727#0" expanded="true" />
-            <element signature="e#15726#15727#0" expanded="true" />
+            <element signature="e#8278#8679#0" expanded="true" />
+            <element signature="e#8678#8679#0" expanded="true" />
+            <element signature="e#8950#10321#0" expanded="true" />
+            <element signature="e#9166#10303#0" expanded="true" />
+            <element signature="e#10302#10303#0" expanded="true" />
+            <element signature="e#10320#10321#0" expanded="true" />
+            <element signature="e#12471#14342#0" expanded="true" />
+            <element signature="e#12790#13942#0" expanded="true" />
+            <element signature="e#13219#13862#0" expanded="true" />
+            <element signature="e#13861#13862#0" expanded="true" />
+            <element signature="e#13941#13942#0" expanded="true" />
+            <element signature="e#14341#14342#0" expanded="true" />
+            <element signature="e#14562#14843#0" expanded="true" />
+            <element signature="e#14842#14843#0" expanded="true" />
+            <element signature="e#14895#15105#0" expanded="true" />
+            <element signature="e#15104#15105#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="6" column="23" lean-forward="false" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
-          <folding />
         </state>
       </provider>
     </entry>
