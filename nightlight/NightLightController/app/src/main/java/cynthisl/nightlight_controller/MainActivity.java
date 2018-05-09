@@ -518,6 +518,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     y = event.values[1] - gravity[1];
                     z = event.values[2] - gravity[2];
 
+                    final float threshold = 5.0f;
+
+                    int r=0, g=0, b=0;
+
+                    if(x > threshold) {
+                        r = 255;
+                    }
+                    if(y > threshold) {
+                        g = 255;
+                    }
+                    if(z > threshold) {
+                        b = 255;
+                    }
+
+                    int c = Color.rgb(r, g, b);
+                    sendColor(c);
+
+                    /*
                     acceleration = x * x + y * y + z * z;
 
                     if (acceleration > 1) {
@@ -543,7 +561,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     else {
                         sendColor(0);
                     }
+                    */
                 }
+
                 break;
 
 
