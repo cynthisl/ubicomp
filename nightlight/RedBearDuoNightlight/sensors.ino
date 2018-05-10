@@ -1,4 +1,5 @@
 Color cycleColor(Color old) {
+  // Cycle through the colors seamlessly
   // order is this:
   // R -> G -> B
   // R->G, B 0, R 255-0, G 0-255
@@ -37,7 +38,6 @@ Color cycleColor(Color old) {
 
   // find which color is currently 0
   // assume never off
-  // TODO this is wrong, what if on the cusp of changing
   switch(cc) {
     case RedToGreen:
       // R -> G
@@ -85,7 +85,7 @@ Color cycleColor(Color old) {
 void setLEDColor(Color c, int brightness)
 {
   // brightness setting: http://forum.arduino.cc/index.php?topic=272862.0
-  // can also use hex RGB
+  // set the LED color
 
   //printInt("Raw Red", red);
   //printInt("Raw Green", green);
@@ -109,9 +109,8 @@ void setLEDColor(Color c, int brightness)
 }
 
 int readBrightness() {
-
+  // Read brightness from photocell
   // https://learn.adafruit.com/photocells?view=all
-  // pulldown = sqrt(Rmin * Rmax)
   int photoMax = 4092;
   int val = analogRead(PHOTOCELL_IN);
   //printInt("Photocell", val);
@@ -122,22 +121,25 @@ int readBrightness() {
 
 
 Color invert(Color c) {
-    return {abs(255-c.red), abs(255-c.green), abs(255-c.blue)};
+  // Return inverse color
+  return {abs(255-c.red), abs(255-c.green), abs(255-c.blue)};
 }
 
 bool readHallEffect() {
-    // https://playground.arduino.cc/Code/HallEffect
-    int mag = analogRead(HALL_SENSOR_IN);
-    bool magnet = false;
-    //printInt("Hall", mag);
+  // bool of whether magnet is present or not
+  // https://playground.arduino.cc/Code/HallEffect
+  int mag = analogRead(HALL_SENSOR_IN);
+  bool magnet = false;
+  //printInt("Hall", mag);
 
-    if(mag < 500) {
-        magnet = true;
-    }
-    return magnet;
+  if(mag < 500) {
+      magnet = true;
+  }
+  return magnet;
 }
 
 bool readFSR() {
+  // bool of whether pressure is on force sensor or not
   // https://learn.adafruit.com/force-sensitive-resistor-fsr/using-an-fsr
   int val = analogRead(FSR_IN);
   //printInt("FSR", val);

@@ -1,11 +1,10 @@
 #include "ble_config.h"
 
 /*
- * Simple Bluetooth Demo
- * This code demonstrates how the RedBear Duo board communicates with 
- * the paired Android app. The user can use the Android app to 
- * do digital read & write, analog read & write, and servo control.
- * Created by Liang He, April 27th, 2018
+ * Bunny Nightlight
+ * Created by Cynthia Lee
+ * 
+ * Bluetooth based off Liang He's example code for class
  * 
  * The Library is created based on Bjorn's code for RedBear BLE communication: 
  * https://github.com/bjo3rn/idd-examples/tree/master/redbearduo/examples/ble_led
@@ -42,7 +41,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define PHOTOCELL_IN          A3
 #define FSR_IN                A0
 
-#define COLOR_SPEED 1
+#define COLOR_SPEED 1 // Increase this to make color change faster
 
 struct Color {
     byte red;
@@ -119,29 +118,6 @@ int bleWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size) {
       led_color.green = receive_data[2];
       led_color.blue = receive_data[3];
     }
-    /*
-    if (receive_data[0] == 0x01) { // Command is to control digital out pin
-    
-      if (receive_data[1] == 0x01)
-        digitalWrite(DIGITAL_OUT_PIN, HIGH);
-      else
-        digitalWrite(DIGITAL_OUT_PIN, LOW);
-    }
-    else if (receive_data[0] == 0xA0) { // Command is to enable analog in reading
-      if (receive_data[1] == 0x01)
-        analog_enabled = true;
-      else
-        analog_enabled = false;
-    }
-    else if (receive_data[0] == 0x02) { // Command is to control PWM pin
-      analogWrite(PWM_PIN, receive_data[1]);
-    }
-    else if (receive_data[0] == 0x04) { // Command is to initialize all.
-      analog_enabled = false;
-      analogWrite(PWM_PIN, 0);
-      digitalWrite(DIGITAL_OUT_PIN, LOW);
-      old_state = LOW;
-    }*/
   }
   return 0;
 }
@@ -155,33 +131,7 @@ int bleWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size) {
  * the other BLE-abled devices
  */
 static void  send_notify(btstack_timer_source_t *ts) {
-  /*if (analog_enabled) { // if analog reading enabled.
-    //Serial.println("characteristic2_notify analog reading ");
-    // Read and send out
-    uint16_t value = analogRead(ANALOG_IN_PIN);
-    send_data[0] = (0x0B);
-    send_data[1] = (value >> 8);
-    send_data[2] = (value);
-    if (ble.attServerCanSendPacket())
-      ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
-  }
-  // If digital in changes, report the state.
-  if (digitalRead(DIGITAL_IN_PIN) != old_state) {
-    Serial.println("send_notify digital reading ");
-    old_state = digitalRead(DIGITAL_IN_PIN);
-    if (digitalRead(DIGITAL_IN_PIN) == HIGH) {
-      send_data[0] = (0x0A);
-      send_data[1] = (0x01);
-      send_data[2] = (0x00);
-      ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
-    }
-    else {
-      send_data[0] = (0x0A);
-      send_data[1] = (0x00);
-      send_data[2] = (0x00);
-      ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
-    }
-  }*/
+
   byte red = led_color.red;
   byte green = led_color.green;
   byte blue = led_color.blue;
