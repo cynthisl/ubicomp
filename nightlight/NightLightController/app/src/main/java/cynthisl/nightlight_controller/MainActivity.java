@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean mConnState = false;
     private boolean mScanFlag = false;
 
-    private byte[] mData = new byte[3];
+    private byte[] mData = new byte[4];
     private static final int REQUEST_ENABLE_BT = 1;
     private static final long SCAN_PERIOD = 2000;   // millis
 
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 mData = intent.getByteArrayExtra(RBLService.EXTRA_DATA);
 
                 //TODO if reading in data update this
-                //readAnalogInValue(mData);
+                readBTData(mData);
             } else if (RBLService.ACTION_GATT_RSSI.equals(action)) {
                 displayData(intent.getStringExtra(RBLService.EXTRA_DATA));
             }
@@ -172,25 +172,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    // Display the received Analog/Digital read on the interface
-    /*
-    private void readAnalogInValue(byte[] data) {
-        for (int i = 0; i < data.length; i += 3) {
-            if (data[i] == 0x0A) {
-                if (data[i + 1] == 0x01)
-                    mDigitalInBtn.setChecked(false);
-                else
-                    mDigitalInBtn.setChecked(true);
-            } else if (data[i] == 0x0B) {
-                int Value;
 
-                Value = ((data[i + 1] << 8) & 0x0000ff00)
-                        | (data[i + 2] & 0x000000ff);
-
-                mAnalogInValue.setText(Value + "");
-            }
+    private void readBTData(byte[] data) {
+        Log.d("bunny", "recieved" + bytesToHex(data) + " ");
+        if (data[0] == 0x0A) {
+            int color = Color.rgb(data[1]&0xFF, data[2]&0xFF, data[3]&0xFF);
+            Log.d("bunny", "recieved" + bytesToHex(data) + " ");
+            colorPicker.setColor(color);
+            colorPicker.setNewCenterColor(color);
+            colorPicker.setOldCenterColor(color);
         }
-    }*/
+    }
 
     // Get Gatt service information for setting up the communication
     private void getGattService(BluetoothGattService gattService) {
@@ -319,7 +311,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mUUID = (TextView) findViewById(R.id.uuidValue);
 
         colorPicker = (ColorPicker) findViewById(R.id.color_picker);
-        colorPicker.setShowOldCenterColor(false);
+        colorPicker.setShowOldCenterColor(true);
+        colorPicker.setTouchAnywhereOnColorWheelEnabled(true);
         mRaveModeBtn = (ToggleButton) findViewById(R.id.raveButton);
 
         SensorManager sm;
@@ -379,14 +372,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // It has three bytes: maker, data value, reserved
 
         // Color picker from https://github.com/LarsWerkman/HoloColorPicker
-        colorPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
+        /*colorPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
 
                 sendColor(color);
             }
-        });
+        });*/
 
+        colorPicker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                sendColor(color);
+            }
+        });
         // Button to turn off and on rave mode
         mRaveModeBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

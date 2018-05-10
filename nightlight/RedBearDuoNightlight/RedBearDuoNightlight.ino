@@ -19,7 +19,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #endif
 
 #define RECEIVE_MAX_LEN    4
-#define SEND_MAX_LEN    3
+#define SEND_MAX_LEN    4
 #define BLE_SHORT_NAME_LEN 0x06 // must be in the range of [0x01, 0x09]
 #define BLE_SHORT_NAME 'B','u','n','n','y'  // define each char but the number of char should be BLE_SHORT_NAME_LEN-1
 
@@ -119,11 +119,6 @@ int bleWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size) {
       led_color.green = receive_data[2];
       led_color.blue = receive_data[3];
     }
-    else if(receive_data[0] == 0x02) {
-      led_color.red = receive_data[1];
-      led_color.green = 0;
-      led_color.blue = 0;
-    }
     /*
     if (receive_data[0] == 0x01) { // Command is to control digital out pin
     
@@ -160,7 +155,7 @@ int bleWriteCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size) {
  * the other BLE-abled devices
  */
 static void  send_notify(btstack_timer_source_t *ts) {
-  if (analog_enabled) { // if analog reading enabled.
+  /*if (analog_enabled) { // if analog reading enabled.
     //Serial.println("characteristic2_notify analog reading ");
     // Read and send out
     uint16_t value = analogRead(ANALOG_IN_PIN);
@@ -186,7 +181,22 @@ static void  send_notify(btstack_timer_source_t *ts) {
       send_data[2] = (0x00);
       ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
     }
-  }
+  }*/
+  byte red = led_color.red;
+  byte green = led_color.green;
+  byte blue = led_color.blue;
+  Serial.print("sending color ");
+  Serial.print(red);
+  Serial.print(" ");
+  Serial.print(green);
+  Serial.print(" ");
+  Serial.println(blue);
+  send_data[0] = (0x0A);
+  send_data[1] = red;
+  send_data[2] = green;
+  send_data[3] = blue;
+  ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
+  
   // Restart timer.
   ble.setTimer(ts, 200);
   ble.addTimer(ts);
@@ -254,5 +264,5 @@ void loop() {
   } 
   setLEDColor(c, brightness);
 
-  delay(10);
+  delay(50);
 }
