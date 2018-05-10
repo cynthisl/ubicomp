@@ -264,5 +264,5 @@ void loop() {
   } 
   setLEDColor(c, brightness);
 
-  delay(50);
+  delay(10);
 }
