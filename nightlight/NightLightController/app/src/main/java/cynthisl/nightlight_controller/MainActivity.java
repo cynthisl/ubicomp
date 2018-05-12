@@ -368,18 +368,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
-        // Send data to Duo board
-        // It has three bytes: maker, data value, reserved
-
         // Color picker from https://github.com/LarsWerkman/HoloColorPicker
-        /*colorPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
-            @Override
-            public void onColorChanged(int color) {
-
-                sendColor(color);
-            }
-        });*/
-
         colorPicker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
