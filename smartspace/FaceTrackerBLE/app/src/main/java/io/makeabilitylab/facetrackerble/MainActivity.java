@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
     private boolean mIsFrontFacing = true;
 
+    private TextView mFaceDebugText;
+
     // Bluetooth stuff
     private BLEDevice mBLEDevice;
 
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
         mPreview = (CameraSourcePreview) findViewById(R.id.cameraSourcePreview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
+
+        mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
 
         final Button button = (Button) findViewById(R.id.buttonFlip);
         button.setOnClickListener(mFlipButtonListener);
@@ -364,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
     /**
      * Connection button
+     * I disabled automatic reconnect because the toasts were annoying
      */
     private View.OnClickListener mConnectButtonListener = new View.OnClickListener() {
         @Override
@@ -464,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             //
             // You can also turn on Landmark detection to get more information about the face like cheek, ear, mouth, etc.
             //   See: https://developers.google.com/android/reference/com/google/android/gms/vision/face/Landmark
-            boolean isPortrait = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
+            boolean isPortrait = (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
             String debugFaceInfo = String.format("Portrait: %b Front-Facing Camera: %b FaceId: %d Loc (x,y): (%.1f, %.1f) Size (w, h): (%.1f, %.1f) Left Eye: %.1f Right Eye: %.1f  Smile: %.1f",
                     isPortrait,
                     mIsFrontFacing,
@@ -475,6 +480,32 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
                     face.getIsSmilingProbability());
 
             Log.i(TAG, debugFaceInfo);
+
+            float faceCenterXraw = (face.getPosition().x + face.getWidth() / 2);
+            float camWidth = CAMERA_PREVIEW_WIDTH;
+            float faceCenterX = faceCenterXraw;
+
+            // swap width if portrait mode
+            if(isPortrait) {
+                camWidth = CAMERA_PREVIEW_HEIGHT;
+            }
+
+            // front vs rear - selfie cam is mirrored
+            // TODO: consider flipping number for rotation?
+            // (ie, servo tracks based on what's on screen, but front camera ends up being mirrored if selfie works)
+            if(mIsFrontFacing) {
+                faceCenterX = camWidth - faceCenterX;
+            }
+
+            String debugText = (String.format("X raw: %f X final: %f", faceCenterXraw, faceCenterX));
+            Log.i("cam", debugText);
+
+            // TODO: So this works, but full range will never be reached
+            // (ie, difficult to have center at x=0 because not enough of face is visible to track)
+            // Might want to scale this further to get full range
+            byte faceCenterXBytes = (byte)((faceCenterX / camWidth) * 255);
+            Log.i("cam", String.format("x: %02x", faceCenterXBytes));
+
 
             // Come up with your own communication protocol to Arduino. Make sure that you change the
             // RECEIVE_MAX_LEN in your Arduino code to match the # of bytes you are sending.
@@ -495,16 +526,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             buf[0] = 0x01;
             buf[1] = leftEyeProb;
             buf[2] = rightEyeProb;
-
-
-            // Get center of face
-            float faceCenter = face.getPosition().x + (face.getWidth()/2);
-            int screenWidth = mPreview.getWidth();
-
-            int facePos = (int)arduinoMap((int)faceCenter, 0, screenWidth, 0, 255);
-
-            buf[3] = (byte)facePos;
-
+            buf[3] = faceCenterXBytes;
 
             // Send the data!
             mBLEDevice.sendData(buf);
@@ -512,7 +534,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
 
         // equivalent of arduino's map function
-        // https://stackoverflow.com/a/7506169
+        // https://www.arduino.cc/reference/en/language/functions/math/map/
         long arduinoMap(long x, long in_min, long in_max, long out_min, long out_max)
         {
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
