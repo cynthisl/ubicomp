@@ -32,7 +32,11 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define LEFT_EYE_ANALOG_OUT_PIN D0
 #define RIGHT_EYE_ANALOG_OUT_PIN D1
 #define HAPPINESS_ANALOG_OUT_PIN D2
+
 #define SERVO_OUT_PIN D3
+#define SONAR_TRIG_OUT_PIN D1
+#define SONAR_ECHO_IN_PIN D2
+#define PIEZO_OUT_PIN D0
 
 #define MAX_SERVO_ANGLE  180
 #define MIN_SERVO_ANGLE  0
@@ -42,6 +46,10 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 // happiness meter (servo)
 Servo _happinessServo;
 Servo faceTrackingServo;
+
+
+// Anything over 400 cm (23200 us pulse) is "out of range"
+const unsigned int MAX_SONAR_DIST = 23200;
 
 // Device connected and disconnected callbacks
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle);
@@ -110,11 +118,18 @@ void setup() {
   Serial.println("BLE start advertising.");
 
   // Setup pins
-  pinMode(LEFT_EYE_ANALOG_OUT_PIN, OUTPUT);
-  pinMode(RIGHT_EYE_ANALOG_OUT_PIN, OUTPUT);
-  pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
-  _happinessServo.attach(HAPPINESS_ANALOG_OUT_PIN);
-  _happinessServo.write( (int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0) );
+  //pinMode(LEFT_EYE_ANALOG_OUT_PIN, OUTPUT);
+  //pinMode(RIGHT_EYE_ANALOG_OUT_PIN, OUTPUT);
+  //pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
+
+pinMode(SONAR_TRIG_OUT_PIN, INPUT);
+pinMode(SONAR_ECHO_IN_PIN, INPUT);
+pinMode(PIEZO_OUT_PIN, OUTPUT);
+
+  digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
+  
+  //_happinessServo.attach(HAPPINESS_ANALOG_OUT_PIN);
+  //_happinessServo.write( (int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0) );
   faceTrackingServo.attach(SERVO_OUT_PIN);
   faceTrackingServo.write((int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0));
 
@@ -186,8 +201,8 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
       // Write code here that processes the FaceTrackerBLE data from Android
       // and properly angles the servo + ultrasonic sensor towards the face
       // Example servo code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoServoSweep   
-      analogWrite(LEFT_EYE_ANALOG_OUT_PIN, receive_data[1]);
-      analogWrite(RIGHT_EYE_ANALOG_OUT_PIN, receive_data[2]);
+      //analogWrite(LEFT_EYE_ANALOG_OUT_PIN, receive_data[1]);
+      //analogWrite(RIGHT_EYE_ANALOG_OUT_PIN, receive_data[2]);
 
       int servoPos = map(receive_data[3], 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
       faceTrackingServo.write(servoPos);
@@ -212,4 +227,26 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // Write code that uses the ultrasonic sensor and transmits this to Android
   // Example ultrasonic code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoUltrasonicRangeFinder
   // Also need to check if distance measurement < threshold and sound alarm
+
+  unsigned long sonar = takeSonarReading();
+  if(sonar < MAX_SONAR_DIST) {
+    Serial.print("Sonar: ");
+    Serial.print(sonarToCM(sonar));
+    Serial.println("cm");
+    if(sonarToCM(sonar) < 50) {
+      tone(PIEZO_OUT_PIN, 262, 250);
+      delay(250*1.3);
+      noTone(PIEZO_OUT_PIN);
+    }
+  }
+
+  // recommended delay in between taking sonar readings is 60ms
+  // ble interval is greater than that (200), so we should be fine
+
+  ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
+
+  // Restart timer
+  ble.setTimer(ts, _sendDataFrequency);
+  ble.addTimer(ts);
+  
 }
