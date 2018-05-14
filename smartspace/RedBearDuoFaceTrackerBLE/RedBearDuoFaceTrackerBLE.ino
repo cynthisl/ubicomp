@@ -1,4 +1,5 @@
 #include "ble_config.h"
+#include "sonar.h"
 
 /*
  * Provides skeleton code to interact with the Android FaceTrackerBLE app 
@@ -47,9 +48,8 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 Servo _happinessServo;
 Servo faceTrackingServo;
 
+Sonar proxSonar;
 
-// Anything over 400 cm (23200 us pulse) is "out of range"
-const unsigned int MAX_SONAR_DIST = 23200;
 
 // Device connected and disconnected callbacks
 void deviceConnectedCallback(BLEStatus_t status, uint16_t handle);
@@ -122,11 +122,12 @@ void setup() {
   //pinMode(RIGHT_EYE_ANALOG_OUT_PIN, OUTPUT);
   //pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
 
-pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
-pinMode(SONAR_ECHO_IN_PIN, INPUT);
-pinMode(PIEZO_OUT_PIN, OUTPUT);
+//pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
+//pinMode(SONAR_ECHO_IN_PIN, INPUT);
+  pinMode(PIEZO_OUT_PIN, OUTPUT);
 
-  digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
+  //digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
+  proxSonar.setUp(SONAR_TRIG_OUT_PIN, SONAR_ECHO_IN_PIN);
   
   //_happinessServo.attach(HAPPINESS_ANALOG_OUT_PIN);
   //_happinessServo.write( (int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0) );
@@ -228,6 +229,19 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // Example ultrasonic code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoUltrasonicRangeFinder
   // Also need to check if distance measurement < threshold and sound alarm
 
+
+  proxSonar.takeReading();
+
+  if(proxSonar.isInRange()) {
+    proxSonar.printLastReading();
+    if(proxSonar.isTooClose()) {
+      
+      tone(PIEZO_OUT_PIN, 262, 250);
+      delay(250*1.3);
+      noTone(PIEZO_OUT_PIN);
+    }
+  }
+  /*
   unsigned long sonar = takeSonarReading();
   if(sonar < MAX_SONAR_DIST) {
     Serial.print("Sonar: ");
@@ -239,7 +253,7 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
       noTone(PIEZO_OUT_PIN);
     }
   }
-
+*/
   // recommended delay in between taking sonar readings is 60ms
   // ble interval is greater than that (200), so we should be fine
 
