@@ -38,6 +38,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define SONAR_TRIG_OUT_PIN D1
 #define SONAR_ECHO_IN_PIN D2
 #define PIEZO_OUT_PIN D0
+#define LED_OUT_PIN D8
 
 #define MAX_SERVO_ANGLE  180
 #define MIN_SERVO_ANGLE  0
@@ -125,6 +126,7 @@ void setup() {
 //pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
 //pinMode(SONAR_ECHO_IN_PIN, INPUT);
   pinMode(PIEZO_OUT_PIN, OUTPUT);
+  pinMode(LED_OUT_PIN, OUTPUT);
 
   //digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
   proxSonar.setUp(SONAR_TRIG_OUT_PIN, SONAR_ECHO_IN_PIN);
@@ -230,30 +232,18 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // Also need to check if distance measurement < threshold and sound alarm
 
 
-  proxSonar.takeReading();
+  //proxSonar.takeReading();
 
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
     if(proxSonar.isTooClose()) {
-      
+      digitalWrite(LED_OUT_PIN, HIGH);
       tone(PIEZO_OUT_PIN, 262, 250);
       delay(250*1.3);
+      digitalWrite(LED_OUT_PIN, LOW);
       noTone(PIEZO_OUT_PIN);
     }
   }
-  /*
-  unsigned long sonar = takeSonarReading();
-  if(sonar < MAX_SONAR_DIST) {
-    Serial.print("Sonar: ");
-    Serial.print(sonarToCM(sonar));
-    Serial.println("cm");
-    if(sonarToCM(sonar) < 50) {
-      tone(PIEZO_OUT_PIN, 262, 250);
-      delay(250*1.3);
-      noTone(PIEZO_OUT_PIN);
-    }
-  }
-*/
   // recommended delay in between taking sonar readings is 60ms
   // ble interval is greater than that (200), so we should be fine
 

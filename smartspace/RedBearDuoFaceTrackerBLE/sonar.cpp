@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "sonar.h"
+#include "QuickStats.h"
 
 Sonar::Sonar() {
 }
@@ -9,12 +10,13 @@ void Sonar::setUp(int trig, int echo) {
   echo_pin = echo;
   pinMode(trig_pin, OUTPUT);
   digitalWrite(trig_pin, LOW);
+
+  current_smoothing_idx = 0;
 }
 
 void Sonar::takeReading() {
   unsigned long t1;
   unsigned long t2;
-  unsigned long pulse_width;
   
   // Hold the trigger pin high for at least 10 us
   digitalWrite(trig_pin, HIGH);
@@ -29,9 +31,10 @@ void Sonar::takeReading() {
   t1 = micros();
   while ( digitalRead(echo_pin) == 1);
   t2 = micros();
-  pulse_width = t2 - t1;
+  last_reading = t2 - t1;
+  
+  last_reading = smooth(last_reading);
 
-  last_reading = pulse_width;
 }
 
 float Sonar::getCMDistance() {
@@ -62,5 +65,25 @@ void Sonar::printLastReading() {
     Serial.print(getInchDistance());
     Serial.println(" in");
   }
+}
+
+
+// smoothing median filter
+// https://forums.adafruit.com/viewtopic.php?f=25&t=14391
+float Sonar::smooth(float val) {
+  smoothing_vals[current_smoothing_idx++] = val;
+  if(current_smoothing_idx >= SMOOTHING_WINDOW_SIZE) {
+    current_smoothing_idx = 0;
+  }
+
+  // sort array
+  // small so not too worried about impact
+  // bubblesort, then return median
+  QuickStats qs;
+  float med = qs.median(smoothing_vals, SMOOTHING_WINDOW_SIZE);
+  
+  return med;
+  
+  
 }
 
