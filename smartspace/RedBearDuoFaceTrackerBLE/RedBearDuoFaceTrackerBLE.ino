@@ -138,9 +138,9 @@ void setup() {
 
   // Start a task to check status of the pins on your RedBear Duo
   // Works by polling every X milliseconds where X is _sendDataFrequency
-  send_characteristic.process = &bleSendDataTimerCallback;
-  ble.setTimer(&send_characteristic, _sendDataFrequency); 
-  ble.addTimer(&send_characteristic);
+  //send_characteristic.process = &bleSendDataTimerCallback;
+  //ble.setTimer(&send_characteristic, _sendDataFrequency); 
+  //ble.addTimer(&send_characteristic);
 }
 
 void loop() 
@@ -207,7 +207,9 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
       //analogWrite(LEFT_EYE_ANALOG_OUT_PIN, receive_data[1]);
       //analogWrite(RIGHT_EYE_ANALOG_OUT_PIN, receive_data[2]);
 
-      int servoPos = map(receive_data[3], 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
+      int servoIn = smoothServo(receive_data[3]);
+
+      int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
       faceTrackingServo.write(servoPos);
       
 
@@ -232,7 +234,7 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // Also need to check if distance measurement < threshold and sound alarm
 
 
-  //proxSonar.takeReading();
+  proxSonar.takeReading();
 
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
