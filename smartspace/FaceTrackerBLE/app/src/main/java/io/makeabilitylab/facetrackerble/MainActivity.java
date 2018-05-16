@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
     private boolean mIsFrontFacing = true;
 
     private TextView mFaceDebugText;
+    private TextView mProxText;
 
     // Bluetooth stuff
     private BLEDevice mBLEDevice;
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
 
         mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
+        mProxText = (TextView) findViewById(R.id.textProx);
 
         final Button button = (Button) findViewById(R.id.buttonFlip);
         button.setOnClickListener(mFlipButtonListener);
@@ -626,6 +628,23 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         // of the servo motor but this would be more for debugging and is not necessary)
 
         Log.i("Face", "Recv: " + bytesToHex(data));
+
+        /*
+        Data format:
+        0 - message type
+        1 - prox sesnor in range
+        2 - distance in cm (if in rnage)
+         */
+
+        if(data[0] == 0x01) {
+            if(data[1] == 0x00) {
+                mProxText.setText("Proximity Sensor Out of Range");
+            }
+            else {
+                mProxText.setText(String.format("Proximity: %d cm", data[2]));
+            }
+
+        }
     }
 
 

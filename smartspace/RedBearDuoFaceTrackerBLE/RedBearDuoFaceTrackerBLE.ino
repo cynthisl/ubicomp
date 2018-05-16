@@ -35,10 +35,10 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define HAPPINESS_ANALOG_OUT_PIN D2
 
 #define SERVO_OUT_PIN D3
-#define SONAR_TRIG_OUT_PIN D1
-#define SONAR_ECHO_IN_PIN D2
-#define PIEZO_OUT_PIN D0
-#define LED_OUT_PIN D8
+#define SONAR_TRIG_OUT_PIN D0
+#define SONAR_ECHO_IN_PIN D1
+#define PIEZO_OUT_PIN D8
+#define LED_OUT_PIN D9
 
 #define MAX_SERVO_ANGLE  180
 #define MIN_SERVO_ANGLE  0
@@ -121,7 +121,7 @@ void setup() {
   // Setup pins
   //pinMode(LEFT_EYE_ANALOG_OUT_PIN, OUTPUT);
   //pinMode(RIGHT_EYE_ANALOG_OUT_PIN, OUTPUT);
-  //pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
+  pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
 
 //pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
 //pinMode(SONAR_ECHO_IN_PIN, INPUT);
@@ -138,9 +138,9 @@ void setup() {
 
   // Start a task to check status of the pins on your RedBear Duo
   // Works by polling every X milliseconds where X is _sendDataFrequency
-  //send_characteristic.process = &bleSendDataTimerCallback;
-  //ble.setTimer(&send_characteristic, _sendDataFrequency); 
-  //ble.addTimer(&send_characteristic);
+  send_characteristic.process = &bleSendDataTimerCallback;
+  ble.setTimer(&send_characteristic, _sendDataFrequency); 
+  ble.addTimer(&send_characteristic);
 }
 
 void loop() 
@@ -233,8 +233,17 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // Example ultrasonic code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoUltrasonicRangeFinder
   // Also need to check if distance measurement < threshold and sound alarm
 
+  /*
+   * Data format
+   * 0 - message type byte
+   * 1 - proximity sensor in rnage
+   * 2 - distance (expected distance? can be byte up to 255 in cm? no floats, they are confusing
+   */
 
   proxSonar.takeReading();
+
+  // set message type (only one type for now, keep this bit for the future changes
+  send_data[0] = 0x01;
 
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
@@ -245,9 +254,17 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
       digitalWrite(LED_OUT_PIN, LOW);
       noTone(PIEZO_OUT_PIN);
     }
+ 
+    send_data[1] = 0x01;
+    send_data[2] = int(proxSonar.getCMDistance());
+      
+  } else {
+    send_data[1] = 0x00;
   }
+  
   // recommended delay in between taking sonar readings is 60ms
   // ble interval is greater than that (200), so we should be fine
+
 
   ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
 
