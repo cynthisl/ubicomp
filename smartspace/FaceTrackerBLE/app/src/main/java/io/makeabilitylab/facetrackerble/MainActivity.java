@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -24,11 +25,13 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.MultiDetector;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
 
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         //   - https://developers.google.com/android/reference/com/google/android/gms/vision/face/FaceDetector
         // We use the detector in a pipeline structure in conjunction with a source (Camera)
         // and a processor (in this case, MultiProcessor.Builder<>(new FaceTrackerFactory()))
-        FaceDetector detector = new FaceDetector.Builder(context)
+        FaceDetector faceDetector= new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
 
@@ -212,12 +215,12 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         // MultiProcessor faceProcessor = new MultiProcessor.Builder<>(new FaceTrackerFactory()).build();
 
         // This processor only finds the largest face in the frame.
-        LargestFaceFocusingProcessor faceProcessor = new LargestFaceFocusingProcessor(detector, new FaceTracker(mGraphicOverlay));
+        LargestFaceFocusingProcessor faceProcessor = new LargestFaceFocusingProcessor(faceDetector, new FaceTracker(mGraphicOverlay));
 
         // set the detector's processor
-        detector.setProcessor(faceProcessor);
+        faceDetector.setProcessor(faceProcessor);
 
-        if (!detector.isOperational()) {
+        if (!faceDetector.isOperational()) {
             // Note: The first time that an app using face API is installed on a device, GMS will
             // download a native library to the device in order to do detection.  Usually this
             // completes before the app is run for the first time.  But if that download has not yet
@@ -229,10 +232,34 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             Log.w(TAG, "Face detector dependencies are not yet available.");
         }
 
+        // Text Recognizer
+        // https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/#4
+        TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
+
+        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay));
+
+        if(!textRecognizer.isOperational()) {
+            Log.w(TAG, "Text detector dependencies are not yet available");
+            IntentFilter lowstorageFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
+            boolean hasLowStorage = registerReceiver(null, lowstorageFilter) != null;
+
+            if (hasLowStorage) {
+                Toast.makeText(this, R.string.low_storage_error, Toast.LENGTH_LONG).show();
+                Log.w(TAG, getString(R.string.low_storage_error));
+            }
+        }
+
+        // Multi detection
+        // https://developers.google.com/vision/android/multi-tracker-tutorial
+        MultiDetector multiDetector = new MultiDetector.Builder()
+                .add(faceDetector)
+                .add(textRecognizer)
+                .build();
+
         // The face detector can run with a fairly low resolution image (e.g., 320x240)
         // Running in lower images is significantly faster than higher resolution
         // We've currently set this to 640x480
-        mCameraSource = new CameraSource.Builder(context, detector)
+        mCameraSource = new CameraSource.Builder(context, multiDetector)
                 .setRequestedPreviewSize(CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT)
                 .setFacing(cameraFacing)
                 .setRequestedFps(30.0f)

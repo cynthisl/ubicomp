@@ -29,7 +29,7 @@
 
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
-            android:value="face" />
+            android:value="face, ocr" />
 
         <activity android:name="io.makeabilitylab.facetrackerble.MainActivity"
             android:label="FaceTrackerBLE"
