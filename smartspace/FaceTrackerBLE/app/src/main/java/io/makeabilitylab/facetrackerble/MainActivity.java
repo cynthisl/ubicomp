@@ -34,6 +34,8 @@ import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.makeabilitylab.facetrackerble.ble.BLEDevice;
 import io.makeabilitylab.facetrackerble.ble.BLEListener;
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
     private TextView mFaceDebugText;
     private TextView mProxText;
 
+    private AlarmData alarmData;
+
     // Bluetooth stuff
     private BLEDevice mBLEDevice;
 
@@ -101,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
         mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
         mProxText = (TextView) findViewById(R.id.textProx);
+
 
         final Button button = (Button) findViewById(R.id.buttonFlip);
         button.setOnClickListener(mFlipButtonListener);
@@ -142,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mBLEDevice = new BLEDevice(this, TARGET_BLE_DEVICE_NAME);
         mBLEDevice.addListener(this);
         attemptBleConnection();
+
+        alarmData = new AlarmData();
     }
 
     /**
@@ -529,36 +536,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             String debugText = (String.format("X raw: %f X final: %f", faceCenterXraw, faceCenterX));
             Log.i("cam", debugText);
 
-            // TODO: So this works, but full range will never be reached
-            // (ie, difficult to have center at x=0 because not enough of face is visible to track)
-            // Might want to scale this further to get full range
-            byte faceCenterXBytes = (byte)((faceCenterX / camWidth) * 255);
-            Log.i("cam", String.format("x: %02x", faceCenterXBytes));
+            alarmData.setFace(faceCenterX/camWidth);
 
-
-            // Come up with your own communication protocol to Arduino. Make sure that you change the
-            // RECEIVE_MAX_LEN in your Arduino code to match the # of bytes you are sending.
-            // For example, one protocol might be:
-            // 0 : Control byte
-            // 1 : left eye open probability (0-255 where 0 is eye closed and 1 is eye open)
-            // 2 : right eye open probability (0-255 where 0 is eye closed and 1 is eye open)
-            // 3 : happiness probability (0-255 where 0 sad, 128 is neutral, and 255 is happy)
-            // 4 : x-location of face (0-255 where 0 is left side of camera and 255 is right side of camera)
-            byte[] buf = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}; // 5-byte initialization
-
-            // CSE590 Student TODO:
-            // Write code that puts in your data into the buffer
-
-            byte leftEyeProb = (face.getIsLeftEyeOpenProbability() > 0.7) ? (byte)0xFF : (byte)0x00;
-            byte rightEyeProb = (face.getIsRightEyeOpenProbability() > 0.7) ? (byte)0xFF : (byte)0x00;
-
-            buf[0] = 0x01;
-            buf[1] = leftEyeProb;
-            buf[2] = rightEyeProb;
-            buf[3] = faceCenterXBytes;
-
-            // Send the data!
-            mBLEDevice.sendData(buf);
         }
 
 
@@ -589,6 +568,80 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         }
     }
 
+    private class AlarmData {
+        boolean isAlarming;
+        boolean hasFace;
+        float faceLocation; // face location as a percentage of X axis
+        String CODEWORD = "banana";
+        byte TRUE_BYTE = 0x01;
+        byte FALSE_BYTE = 0x00;
+
+
+        public AlarmData() {
+            reset();
+
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    sendOverBT();
+                }
+            }, 0, 200);
+        }
+
+        private void reset(){
+            isAlarming = false;
+            hasFace = false;
+        }
+
+        private void setFace(float xloc) {
+            hasFace = true;
+            faceLocation = xloc;
+        }
+
+        private void setText(String text) {
+            if(text.contains(CODEWORD)) {
+                isAlarming = true;
+            }
+        }
+
+        public void sendOverBT() {
+
+            if(mBLEDevice.getState() != BLEDevice.State.CONNECTED) {
+                return;
+            }
+
+            // TODO: So this works, but full range will never be reached
+            // (ie, difficult to have center at x=0 because not enough of face is visible to track)
+            // Might want to scale this further to get full range
+            byte faceCenterXBytes = (byte)(faceLocation * 255);
+            Log.i("cam", String.format("x: %02x", faceCenterXBytes));
+
+
+            // Come up with your own communication protocol to Arduino. Make sure that you change the
+            // RECEIVE_MAX_LEN in your Arduino code to match the # of bytes you are sending.
+            // For example, one protocol might be:
+            // 0 : Control byte
+            // 1 : left eye open probability (0-255 where 0 is eye closed and 1 is eye open)
+            // 2 : right eye open probability (0-255 where 0 is eye closed and 1 is eye open)
+            // 3 : happiness probability (0-255 where 0 sad, 128 is neutral, and 255 is happy)
+            // 4 : x-location of face (0-255 where 0 is left side of camera and 255 is right side of camera)
+            byte[] buf = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}; // 5-byte initialization
+
+            // CSE590 Student TODO:
+            // Write code that puts in your data into the buffer
+
+            buf[0] = 0x01;
+            buf[1] = hasFace ? TRUE_BYTE : FALSE_BYTE;
+            buf[2] = 0x00;
+            buf[3] = faceCenterXBytes;
+
+            // Send the data!
+            mBLEDevice.sendData(buf);
+
+            reset();
+        }
+    }
     //==============================================================================================
     // Bluetooth stuff
     //==============================================================================================

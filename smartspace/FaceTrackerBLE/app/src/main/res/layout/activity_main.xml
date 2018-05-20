@@ -64,6 +64,7 @@
         android:textSize="11dp"
         android:textColor="#FFFFFF"
         android:text="face status"/>
+
     <TextView
         android:id="@+id/textProx"
         android:layout_width="wrap_content"
@@ -72,6 +73,14 @@
         android:textSize="11dp"
         android:textColor="#FFFFFF"
         android:text="face status"/>
+        <TextView
+        android:id="@+id/textAlertingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:textSize="11dp"
+        android:textColor="#FFFFFF"
+        android:text="alert status"/>
     </LinearLayout>
 
 
