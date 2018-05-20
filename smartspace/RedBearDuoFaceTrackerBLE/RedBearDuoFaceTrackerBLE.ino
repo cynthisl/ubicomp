@@ -200,19 +200,15 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
     
     // process the data. 
     if (receive_data[0] == 0x01) { //receive the face data 
-      // CSE590 Student TODO
-      // Write code here that processes the FaceTrackerBLE data from Android
-      // and properly angles the servo + ultrasonic sensor towards the face
-      // Example servo code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoServoSweep   
-      //analogWrite(LEFT_EYE_ANALOG_OUT_PIN, receive_data[1]);
-      //analogWrite(RIGHT_EYE_ANALOG_OUT_PIN, receive_data[2]);
 
-      int servoIn = smoothServo(receive_data[3]);
-
-      int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
-      faceTrackingServo.write(servoPos);
+      if(receive_data[1] == 0x01) { // hasFace bool
+        
+        int servoIn = smoothServo(receive_data[2]);
+  
+        int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
+        faceTrackingServo.write(servoPos);
+      }
       
-
       
     }
   }

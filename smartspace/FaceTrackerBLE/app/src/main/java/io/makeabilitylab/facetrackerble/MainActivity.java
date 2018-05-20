@@ -618,23 +618,15 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             Log.i("cam", String.format("x: %02x", faceCenterXBytes));
 
 
-            // Come up with your own communication protocol to Arduino. Make sure that you change the
-            // RECEIVE_MAX_LEN in your Arduino code to match the # of bytes you are sending.
-            // For example, one protocol might be:
-            // 0 : Control byte
-            // 1 : left eye open probability (0-255 where 0 is eye closed and 1 is eye open)
-            // 2 : right eye open probability (0-255 where 0 is eye closed and 1 is eye open)
-            // 3 : happiness probability (0-255 where 0 sad, 128 is neutral, and 255 is happy)
-            // 4 : x-location of face (0-255 where 0 is left side of camera and 255 is right side of camera)
             byte[] buf = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}; // 5-byte initialization
 
-            // CSE590 Student TODO:
-            // Write code that puts in your data into the buffer
 
             buf[0] = 0x01;
             buf[1] = hasFace ? TRUE_BYTE : FALSE_BYTE;
-            buf[2] = 0x00;
-            buf[3] = faceCenterXBytes;
+            buf[2] = faceCenterXBytes;
+            buf[3] = isAlarming ? TRUE_BYTE : FALSE_BYTE;
+
+            Log.i("BLESend", String.format("Sending %s", bytesToHex(buf)));
 
             // Send the data!
             mBLEDevice.sendData(buf);
