@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
     private TextView mFaceDebugText;
     private TextView mProxText;
 
-    private AlarmData alarmData;
+    private ArduinoData arduinoData;
 
     // Bluetooth stuff
     private BLEDevice mBLEDevice;
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mBLEDevice.addListener(this);
         attemptBleConnection();
 
-        alarmData = new AlarmData();
+        arduinoData = new ArduinoData(mBLEDevice);
     }
 
     /**
@@ -536,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
             String debugText = (String.format("X raw: %f X final: %f", faceCenterXraw, faceCenterX));
             Log.i("cam", debugText);
 
-            alarmData.setFace(faceCenterX/camWidth);
+            arduinoData.setFace(faceCenterX/camWidth);
 
         }
 
@@ -568,72 +568,6 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         }
     }
 
-    private class AlarmData {
-        boolean isAlarming;
-        boolean hasFace;
-        float faceLocation; // face location as a percentage of X axis
-        String CODEWORD = "banana";
-        byte TRUE_BYTE = 0x01;
-        byte FALSE_BYTE = 0x00;
-
-
-        public AlarmData() {
-            reset();
-
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    sendOverBT();
-                }
-            }, 0, 200);
-        }
-
-        private void reset(){
-            isAlarming = false;
-            hasFace = false;
-        }
-
-        private void setFace(float xloc) {
-            hasFace = true;
-            faceLocation = xloc;
-        }
-
-        private void setText(String text) {
-            if(text.contains(CODEWORD)) {
-                isAlarming = true;
-            }
-        }
-
-        public void sendOverBT() {
-
-            if(mBLEDevice.getState() != BLEDevice.State.CONNECTED) {
-                return;
-            }
-
-            // TODO: So this works, but full range will never be reached
-            // (ie, difficult to have center at x=0 because not enough of face is visible to track)
-            // Might want to scale this further to get full range
-            byte faceCenterXBytes = (byte)(faceLocation * 255);
-            Log.i("cam", String.format("x: %02x", faceCenterXBytes));
-
-
-            byte[] buf = new byte[] { (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00}; // 5-byte initialization
-
-
-            buf[0] = 0x01;
-            buf[1] = hasFace ? TRUE_BYTE : FALSE_BYTE;
-            buf[2] = faceCenterXBytes;
-            buf[3] = isAlarming ? TRUE_BYTE : FALSE_BYTE;
-
-            Log.i("BLESend", String.format("Sending %s", bytesToHex(buf)));
-
-            // Send the data!
-            mBLEDevice.sendData(buf);
-
-            reset();
-        }
-    }
     //==============================================================================================
     // Bluetooth stuff
     //==============================================================================================
@@ -699,7 +633,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         // and outputs them in your app. (You could also consider receiving the angle
         // of the servo motor but this would be more for debugging and is not necessary)
 
-        Log.i("Face", "Recv: " + bytesToHex(data));
+        Log.i("Face", "Recv: " + ArduinoData.bytesToHex(data));
 
         /*
         Data format:
@@ -720,21 +654,6 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
     }
 
 
-    final private static char[] hexArray = { '0', '1', '2', '3', '4', '5', '6',
-            '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-    // Convert an array of bytes into Hex format string
-    // From sample code
-    private String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        int v;
-        for (int j = 0; j < bytes.length; j++) {
-            v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
 
 
     @Override

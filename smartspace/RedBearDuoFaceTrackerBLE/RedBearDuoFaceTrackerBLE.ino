@@ -50,6 +50,7 @@ Servo _happinessServo;
 Servo faceTrackingServo;
 
 Sonar proxSonar;
+bool alarmOn;
 
 
 // Device connected and disconnected callbacks
@@ -136,6 +137,8 @@ void setup() {
   faceTrackingServo.attach(SERVO_OUT_PIN);
   faceTrackingServo.write((int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0));
 
+  alarmOn = true;
+
   // Start a task to check status of the pins on your RedBear Duo
   // Works by polling every X milliseconds where X is _sendDataFrequency
   send_characteristic.process = &bleSendDataTimerCallback;
@@ -208,6 +211,8 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
         int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
         faceTrackingServo.write(servoPos);
       }
+
+      alarmOn = (receive_data[3] == 0x00) ? false : true;
       
       
     }
@@ -243,7 +248,7 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
 
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
-    if(proxSonar.isTooClose()) {
+    if(alarmOn && proxSonar.isTooClose()) {
       digitalWrite(LED_OUT_PIN, HIGH);
       tone(PIEZO_OUT_PIN, 262, 250);
       delay(250*1.3);
