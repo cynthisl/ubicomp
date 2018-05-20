@@ -212,7 +212,7 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
         faceTrackingServo.write(servoPos);
       }
 
-      alarmOn = (receive_data[3] == 0x00) ? false : true;
+      alarmOn = (receive_data[3] == 0x01) ? true : false;
       
       
     }

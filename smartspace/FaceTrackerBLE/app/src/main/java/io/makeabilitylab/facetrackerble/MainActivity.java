@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
         mProxText = (TextView) findViewById(R.id.textProx);
 
+        arduinoData = new ArduinoData();
 
         final Button button = (Button) findViewById(R.id.buttonFlip);
         button.setOnClickListener(mFlipButtonListener);
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mBLEDevice.addListener(this);
         attemptBleConnection();
 
-        arduinoData = new ArduinoData(mBLEDevice);
+        arduinoData.setBLE(mBLEDevice);
     }
 
     /**
@@ -243,7 +244,9 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         // https://codelabs.developers.google.com/codelabs/mobile-vision-ocr/#4
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
 
-        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay));
+        OcrDetectorProcessor odp = new OcrDetectorProcessor(mGraphicOverlay);
+        odp.addCallback(arduinoData);
+        textRecognizer.setProcessor(odp);
 
         if(!textRecognizer.isOperational()) {
             Log.w(TAG, "Text detector dependencies are not yet available");

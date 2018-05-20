@@ -7,7 +7,7 @@ import java.util.TimerTask;
 
 import io.makeabilitylab.facetrackerble.ble.BLEDevice;
 
-public class ArduinoData {
+public class ArduinoData  implements Callback{
     boolean isAlarming;
     boolean hasFace;
     float faceLocation; // face location as a percentage of X axis
@@ -16,11 +16,10 @@ public class ArduinoData {
     byte FALSE_BYTE = 0x00;
 
     BLEDevice ble;
+    long timeLastTextSeen;
 
 
-    public ArduinoData(BLEDevice ble_device) {
-
-        ble = ble_device;
+    public ArduinoData() {
 
         reset();
 
@@ -33,9 +32,18 @@ public class ArduinoData {
         }, 0, 200);
     }
 
+    // need to set ble after init because of dependency with ocr processor
+    public void setBLE(BLEDevice device) {
+        ble = device;
+    }
+
     private void reset(){
-        isAlarming = true;
         hasFace = false;
+
+        // reset the isAlarming only if there hasn't been a text signal for some time
+        if(System.currentTimeMillis() - timeLastTextSeen > 1000) {
+            isAlarming = true;
+        }
     }
 
     public void setFace(float xloc) {
@@ -43,13 +51,25 @@ public class ArduinoData {
         faceLocation = xloc;
     }
 
+    @Override
     public void setText(String text) {
-        if(text.contains(CODEWORD)) {
+        // lots of false negatives
+        // turning alarms off should be easy. turning them back on should require several consective false.
+        // but what about if no text is detected? this won't get called to set it back to false.
+        // don't aggresively reset this
+        if(text.toLowerCase().contains(CODEWORD)) {
+            timeLastTextSeen = System.currentTimeMillis();
+
             isAlarming = false;
         }
     }
 
     public void sendOverBT() {
+
+        if(ble == null) {
+            Log.i("Arduino", "BLE not set");
+            return;
+        }
 
         if(ble.getState() != BLEDevice.State.CONNECTED) {
             return;

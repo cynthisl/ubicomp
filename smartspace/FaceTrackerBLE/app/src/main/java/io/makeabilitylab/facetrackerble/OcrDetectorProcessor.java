@@ -22,6 +22,9 @@ import io.makeabilitylab.facetrackerble.camera.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A very simple Processor which gets detected TextBlocks and adds them to the overlay
  * as OcrGraphics.
@@ -29,9 +32,15 @@ import com.google.android.gms.vision.text.TextBlock;
 public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
 
     private GraphicOverlay graphicOverlay;
+    private List<Callback> callbacks;
 
     OcrDetectorProcessor(GraphicOverlay ocrGraphicOverlay) {
         graphicOverlay = ocrGraphicOverlay;
+        callbacks = new ArrayList<>();
+    }
+
+    public void addCallback(Callback c) {
+        callbacks.add(c);
     }
 
     /**
@@ -51,6 +60,9 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
                 Log.d("OcrDetectorProcessor", "Text detected! " + item.getValue());
                 OcrGraphic graphic = new OcrGraphic(graphicOverlay, item);
                 graphicOverlay.add(graphic);
+                for (Callback c : callbacks) {
+                    c.setText(item.getValue());
+                }
             }
         }
     }
