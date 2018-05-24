@@ -642,7 +642,8 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
                 mProxText.setText("Proximity Sensor Out of Range");
             }
             else {
-                mProxText.setText(String.format("Proximity: %d cm", data[2]));
+                int dist = data[2] & 0xFF;
+                mProxText.setText(String.format("Proximity: %d cm", dist));
             }
 
         }
