@@ -1,4 +1,4 @@
-// ino file for face servo smoothing
+// ino file for face servo smoothing moving average
 // not a class because just keeping variables in this file
 
 #define FACE_WINDOW_SIZE 5

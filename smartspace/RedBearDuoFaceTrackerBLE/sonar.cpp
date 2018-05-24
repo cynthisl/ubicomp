@@ -14,6 +14,9 @@ void Sonar::setUp(int trig, int echo) {
   current_smoothing_idx = 0;
 }
 
+/**
+ * Take a sonar reading, smooth it, and save it
+ **/
 void Sonar::takeReading() {
   unsigned long t1;
   unsigned long t2;
@@ -76,9 +79,8 @@ float Sonar::smooth(float val) {
     current_smoothing_idx = 0;
   }
 
-  // sort array
-  // small so not too worried about impact
-  // bubblesort, then return median
+  // Using QuickStats to get median
+  // https://playground.arduino.cc/Main/QuickStats
   QuickStats qs;
   float med = qs.median(smoothing_vals, SMOOTHING_WINDOW_SIZE);
   

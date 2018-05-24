@@ -7,13 +7,17 @@ import java.util.TimerTask;
 
 import io.makeabilitylab.facetrackerble.ble.BLEDevice;
 
+/**
+ * Class to keep track of and send arduino data.
+ */
 public class ArduinoData  implements Callback{
     boolean isAlarming;
     boolean hasFace;
     float faceLocation; // face location as a percentage of X axis
-    String CODEWORD = "lush";
-    byte TRUE_BYTE = 0x01;
-    byte FALSE_BYTE = 0x00;
+
+    static final String CODEWORD = "pear";
+    static final byte TRUE_BYTE = 0x01;
+    static final byte FALSE_BYTE = 0x00;
 
     BLEDevice ble;
     long timeLastTextSeen;
@@ -23,6 +27,7 @@ public class ArduinoData  implements Callback{
 
         reset();
 
+        // timer to continusouly send data
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -46,11 +51,19 @@ public class ArduinoData  implements Callback{
         }
     }
 
+    /**
+     * Set position of face as a float percent 0 - 1
+     * @param xloc
+     */
     public void setFace(float xloc) {
         hasFace = true;
         faceLocation = xloc;
     }
 
+    /**
+     * Set text that is seen. Will only work if text matches codeword.
+     * @param text
+     */
     @Override
     public void setText(String text) {
         // lots of false negatives
@@ -64,6 +77,9 @@ public class ArduinoData  implements Callback{
         }
     }
 
+    /**
+     * Send the data and reset class
+     */
     public void sendOverBT() {
 
         if(ble == null) {

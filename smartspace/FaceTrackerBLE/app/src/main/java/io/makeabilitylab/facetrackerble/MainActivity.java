@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
     private boolean mIsFrontFacing = true;
 
-    private TextView mFaceDebugText;
+   // private TextView mFaceDebugText;
     private TextView mProxText;
 
     private ArduinoData arduinoData;
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
         mPreview = (CameraSourcePreview) findViewById(R.id.cameraSourcePreview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
 
-        mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
+        //mFaceDebugText = (TextView) findViewById(R.id.textFaceStatus);
         mProxText = (TextView) findViewById(R.id.textProx);
 
         arduinoData = new ArduinoData();
@@ -541,14 +541,6 @@ public class MainActivity extends AppCompatActivity implements BLEListener{
 
             arduinoData.setFace(faceCenterX/camWidth);
 
-        }
-
-
-        // equivalent of arduino's map function
-        // https://www.arduino.cc/reference/en/language/functions/math/map/
-        long arduinoMap(long x, long in_min, long in_max, long out_min, long out_max)
-        {
-            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
 
         /**

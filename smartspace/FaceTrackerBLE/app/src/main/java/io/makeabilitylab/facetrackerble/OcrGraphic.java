@@ -32,6 +32,8 @@ import java.util.List;
 /**
  * Graphic instance for rendering TextBlock position, size, and ID within an associated graphic
  * overlay view.
+ *
+ * From https://codelabs.developers.google.com/codelabs/mobile-vision-ocr
  */
 public class OcrGraphic extends GraphicOverlay.Graphic {
 

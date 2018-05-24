@@ -28,6 +28,8 @@ import java.util.List;
 /**
  * A very simple Processor which gets detected TextBlocks and adds them to the overlay
  * as OcrGraphics.
+ *
+ * From https://codelabs.developers.google.com/codelabs/mobile-vision-ocr
  */
 public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
 
@@ -39,6 +41,10 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         callbacks = new ArrayList<>();
     }
 
+    /**
+     * Callback that occurs whenever detect occurrs
+     * @param c Function of class that implements callback
+     */
     public void addCallback(Callback c) {
         callbacks.add(c);
     }
