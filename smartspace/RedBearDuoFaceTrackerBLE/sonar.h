@@ -19,6 +19,7 @@ class Sonar {
     bool isTooClose();
     bool isInRange();
     void printLastReading();
+    unsigned long getRawReading();
     
     
   private:

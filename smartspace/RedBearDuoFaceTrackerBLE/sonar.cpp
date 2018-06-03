@@ -55,7 +55,10 @@ bool Sonar::isTooClose() {
 
 bool Sonar::isInRange() {
   return (last_reading < MAX_SONAR_DIST);
+}
 
+unsigned long Sonar::getRawReading() {
+  return last_reading;
 }
 
 void Sonar::printLastReading() {

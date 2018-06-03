@@ -35,10 +35,12 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define HAPPINESS_ANALOG_OUT_PIN D2
 
 #define SERVO_OUT_PIN D3
-#define SONAR_TRIG_OUT_PIN D0
-#define SONAR_ECHO_IN_PIN D1
-#define PIEZO_OUT_PIN D8
-#define LED_OUT_PIN D9
+#define SONAR_TRIG_OUT_PIN D8
+#define SONAR_ECHO_IN_PIN D9
+#define PIEZO_OUT_PIN A7
+#define LED_RED_PIN D0
+#define LED_GREEN_PIN D1
+#define LED_BLUE_PIN D2
 
 #define MAX_SERVO_ANGLE  180
 #define MIN_SERVO_ANGLE  0
@@ -127,7 +129,9 @@ void setup() {
 //pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
 //pinMode(SONAR_ECHO_IN_PIN, INPUT);
   pinMode(PIEZO_OUT_PIN, OUTPUT);
-  pinMode(LED_OUT_PIN, OUTPUT);
+  pinMode(LED_RED_PIN, OUTPUT);
+  pinMode(LED_GREEN_PIN, OUTPUT);
+  pinMode(LED_BLUE_PIN, OUTPUT);
 
   //digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
   proxSonar.setUp(SONAR_TRIG_OUT_PIN, SONAR_ECHO_IN_PIN);
@@ -138,6 +142,7 @@ void setup() {
   faceTrackingServo.write((int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0));
 
   alarmOn = true;
+  setLEDColor(0, 0, 255);
 
   // Start a task to check status of the pins on your RedBear Duo
   // Works by polling every X milliseconds where X is _sendDataFrequency
@@ -204,15 +209,35 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
     // process the data. 
     if (receive_data[0] == 0x01) { //receive the face data 
 
+      alarmOn = (receive_data[3] == 0x01) ? true : false;
+
       if(receive_data[1] == 0x01) { // hasFace bool
         
         int servoIn = smoothServo(receive_data[2]);
   
         int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
         faceTrackingServo.write(servoPos);
+
+        // change LED color based off distance
+        if(!alarmOn) {
+          setLEDColor(0, 255, 0);
+        } else {
+          // gradient: red is 255, green from 255-0
+          if(!proxSonar.isInRange()) {
+            setLEDColor(255, 255, 0);
+          } else {
+            if(proxSonar.isTooClose()) {
+              setLEDColor(255, 0, 0);
+            } else {
+              byte proxRangeGreen = map(proxSonar.getRawReading(), 0, MAX_SONAR_DIST, 0, 255);
+              setLEDColor(255, proxRangeGreen, 0);
+            }
+          }
+        }
+      } else {
+        setLEDColor(0, 0, 255);
       }
 
-      alarmOn = (receive_data[3] == 0x01) ? true : false;
       
       
     }
@@ -249,10 +274,10 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
     if(alarmOn && proxSonar.isTooClose()) {
-      digitalWrite(LED_OUT_PIN, HIGH);
+      //digitalWrite(LED_OUT_PIN, HIGH);
       tone(PIEZO_OUT_PIN, 262, 250);
       delay(250*1.3);
-      digitalWrite(LED_OUT_PIN, LOW);
+      //digitalWrite(LED_OUT_PIN, LOW);
       noTone(PIEZO_OUT_PIN);
     }
  
@@ -274,3 +299,10 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   ble.addTimer(ts);
   
 }
+
+void setLEDColor(byte red, byte green, byte blue) {
+  analogWrite(LED_RED_PIN, 255-red);
+  analogWrite(LED_GREEN_PIN, 255-green);
+  analogWrite(LED_BLUE_PIN, 255-blue);
+}
+
