@@ -30,17 +30,14 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 /* Define the pins on the Duo board
  * TODO: change and add/subtract the pins here for your applications (as necessary)
  */
-#define LEFT_EYE_ANALOG_OUT_PIN D0
-#define RIGHT_EYE_ANALOG_OUT_PIN D1
-#define HAPPINESS_ANALOG_OUT_PIN D2
-
-#define SERVO_OUT_PIN D3
+#define SERVO_OUT_PIN D4
 #define SONAR_TRIG_OUT_PIN D8
 #define SONAR_ECHO_IN_PIN D9
 #define PIEZO_OUT_PIN A7
 #define LED_RED_PIN D0
 #define LED_GREEN_PIN D1
 #define LED_BLUE_PIN D2
+#define HALL_SENSOR_IN_PIN A2
 
 #define MAX_SERVO_ANGLE  180
 #define MIN_SERVO_ANGLE  0
@@ -122,8 +119,6 @@ void setup() {
   Serial.println("BLE start advertising.");
 
   // Setup pins
-  //pinMode(LEFT_EYE_ANALOG_OUT_PIN, OUTPUT);
-  //pinMode(RIGHT_EYE_ANALOG_OUT_PIN, OUTPUT);
   pinMode(BLE_DEVICE_CONNECTED_DIGITAL_OUT_PIN, OUTPUT);
 
 //pinMode(SONAR_TRIG_OUT_PIN, OUTPUT);
@@ -132,12 +127,10 @@ void setup() {
   pinMode(LED_RED_PIN, OUTPUT);
   pinMode(LED_GREEN_PIN, OUTPUT);
   pinMode(LED_BLUE_PIN, OUTPUT);
+  //pinMode(HALL_SENSOR_IN_PIN, INPUT);
 
-  //digitalWrite(SONAR_TRIG_OUT_PIN, LOW);
   proxSonar.setUp(SONAR_TRIG_OUT_PIN, SONAR_ECHO_IN_PIN);
   
-  //_happinessServo.attach(HAPPINESS_ANALOG_OUT_PIN);
-  //_happinessServo.write( (int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0) );
   faceTrackingServo.attach(SERVO_OUT_PIN);
   faceTrackingServo.write((int)((MAX_SERVO_ANGLE - MIN_SERVO_ANGLE) / 2.0));
 
@@ -217,6 +210,8 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
   
         int servoPos = map(servoIn, 0, 255, MIN_SERVO_ANGLE, MAX_SERVO_ANGLE);
         faceTrackingServo.write(servoPos);
+        Serial.print("Moving servo: ");
+        Serial.print(servoPos);
 
         // change LED color based off distance
         if(!alarmOn) {
@@ -236,9 +231,7 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
         }
       } else {
         setLEDColor(0, 0, 255);
-      }
-
-      
+      }  
       
     }
   }
@@ -254,7 +247,6 @@ int bleReceiveDataCallback(uint16_t value_handle, uint8_t *buffer, uint16_t size
  * the connected BLE device (e.g., Android)
  */
 static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
-  // CSE590 Student TODO
   // Write code that uses the ultrasonic sensor and transmits this to Android
   // Example ultrasonic code here: https://github.com/jonfroehlich/CSE590Sp2018/tree/master/L06-Arduino/RedBearDuoUltrasonicRangeFinder
   // Also need to check if distance measurement < threshold and sound alarm
@@ -273,6 +265,7 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
 
   if(proxSonar.isInRange()) {
     proxSonar.printLastReading();
+    
     if(alarmOn && proxSonar.isTooClose()) {
       //digitalWrite(LED_OUT_PIN, HIGH);
       tone(PIEZO_OUT_PIN, 262, 250);
@@ -291,7 +284,6 @@ static void bleSendDataTimerCallback(btstack_timer_source_t *ts) {
   // recommended delay in between taking sonar readings is 60ms
   // ble interval is greater than that (200), so we should be fine
 
-
   ble.sendNotify(send_handle, send_data, SEND_MAX_LEN);
 
   // Restart timer
@@ -304,5 +296,21 @@ void setLEDColor(byte red, byte green, byte blue) {
   analogWrite(LED_RED_PIN, 255-red);
   analogWrite(LED_GREEN_PIN, 255-green);
   analogWrite(LED_BLUE_PIN, 255-blue);
+  
 }
+
+bool readHallEffect() {
+  // reused code from my nightlight
+  // this is unused because I broke my sensor
+  int mag = analogRead(HALL_SENSOR_IN_PIN);
+  Serial.print("Hall effect: ");
+  Serial.println(mag);
+  bool magnet = false;
+  if(mag < 500) {
+    magnet = true;
+  }
+  return magnet;
+}
+  
+
 
